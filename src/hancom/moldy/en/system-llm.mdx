@@ -1,0 +1,33 @@
+---
+title: System LLM settings
+description: Configure the system models used by Builder, Assistant, and image generation.
+---
+
+System LLM settings are operator-only model slots for Moldy platform workflows. They select the system models used by Builder, Assistant, and image generation, which are separate from the user-owned model credentials used by normal agent chat.
+
+Configure these settings before relying on conversational agent creation, Fix assistance, or generated agent images. If those platform flows fail while normal chat works, System LLM settings are the first place to inspect.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/system-llm.png" alt="Moldy System LLM settings screen" />
+
+## Role slots
+
+| Slot | Purpose |
+| --- | --- |
+| Primary text model | Default text LLM for Builder and Assistant |
+| Fallback text model | Text LLM used when the primary model call fails |
+| Image model | Model used for image generation |
+
+Each slot should point to a model and credential that the operator has tested. Missing or mismatched slots can cause Builder, Assistant, or image generation to fail even when user agents have their own working credentials.
+
+## Configure System LLM
+
+1. Register an LLM credential in **System Credentials**.
+2. Open **System LLM Settings**.
+3. Select a system credential and model name for each slot.
+4. Save and verify the Builder or Assistant flow.
+
+Do not use System LLM settings as a substitute for user chat credentials. Regular agent conversations still require a user-owned credential or another runtime-approved credential path for the selected model.
+
+<Warning>
+Builder, Assistant, and image generation may not work as expected until all three slots are configured.
+</Warning>

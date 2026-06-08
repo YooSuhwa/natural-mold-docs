@@ -1,0 +1,187 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "aspen",
+  "name": "Moldy Docs",
+  "description": "Product documentation for Moldy, an AI agent builder.",
+  "colors": {
+    "primary": "#047857",
+    "light": "#34D399",
+    "dark": "#10B981"
+  },
+  "icons": {
+    "library": "tabler"
+  },
+  "background": {
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#07110E"
+    }
+  },
+  "appearance": {
+    "default": "system",
+    "strict": false
+  },
+  "head": [
+    "<link rel=\"stylesheet\" href=\"/style.css\">",
+    "<script src=\"/language-redirect.js\"></script>"
+  ],
+  "navigation": {
+    "languages": [
+      {
+        "language": "en",
+        "default": true,
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "hancom/moldy/en/index",
+              "hancom/moldy/en/quickstart",
+              "hancom/moldy/en/accounts-login",
+              "hancom/moldy/en/operator-setup"
+            ]
+          },
+          {
+            "group": "Build and use agents",
+            "pages": [
+              "hancom/moldy/en/create-first-agent",
+              "hancom/moldy/en/recipes",
+              "hancom/moldy/en/chat-with-agent",
+              "hancom/moldy/en/chat-components",
+              "hancom/moldy/en/agent-settings"
+            ]
+          },
+          {
+            "group": "Settings and resources",
+            "pages": [
+              "hancom/moldy/en/settings",
+              "hancom/moldy/en/memory",
+              "hancom/moldy/en/files-artifacts",
+              "hancom/moldy/en/artifact-viewers",
+              "hancom/moldy/en/agent-api",
+              "hancom/moldy/en/models-credentials",
+              "hancom/moldy/en/system-llm",
+              "hancom/moldy/en/schedules",
+              "hancom/moldy/en/usage"
+            ]
+          },
+          {
+            "group": "Connect and operate",
+            "pages": [
+              "hancom/moldy/en/tools-mcp",
+              "hancom/moldy/en/tools",
+              "hancom/moldy/en/mcp-servers",
+              "hancom/moldy/en/skills",
+              "hancom/moldy/en/marketplace",
+              "hancom/moldy/en/marketplace-install-publish",
+              "hancom/moldy/en/access-oversight",
+              "hancom/moldy/en/security-privacy"
+            ]
+          },
+          {
+            "group": "Reference",
+            "pages": [
+              "hancom/moldy/en/concepts",
+              "hancom/moldy/en/api-reference",
+              "hancom/moldy/en/api-cookbook",
+              "hancom/moldy/en/api-endpoints",
+              "hancom/moldy/en/api-auth",
+              "hancom/moldy/en/api-chat-streaming",
+              "hancom/moldy/en/error-reference",
+              "hancom/moldy/en/faq",
+              "hancom/moldy/en/documentation-workflow",
+              "hancom/moldy/en/release-docs-updates",
+              "hancom/moldy/en/changelog",
+              "hancom/moldy/en/troubleshooting"
+            ]
+          }
+        ]
+      },
+      {
+        "language": "ko",
+        "groups": [
+          {
+            "group": "시작하기",
+            "pages": [
+              "hancom/moldy/ko/index",
+              "hancom/moldy/ko/quickstart",
+              "hancom/moldy/ko/accounts-login",
+              "hancom/moldy/ko/operator-setup"
+            ]
+          },
+          {
+            "group": "에이전트 만들기와 사용",
+            "pages": [
+              "hancom/moldy/ko/create-first-agent",
+              "hancom/moldy/ko/recipes",
+              "hancom/moldy/ko/chat-with-agent",
+              "hancom/moldy/ko/chat-components",
+              "hancom/moldy/ko/agent-settings"
+            ]
+          },
+          {
+            "group": "설정과 리소스",
+            "pages": [
+              "hancom/moldy/ko/settings",
+              "hancom/moldy/ko/memory",
+              "hancom/moldy/ko/files-artifacts",
+              "hancom/moldy/ko/artifact-viewers",
+              "hancom/moldy/ko/agent-api",
+              "hancom/moldy/ko/models-credentials",
+              "hancom/moldy/ko/system-llm",
+              "hancom/moldy/ko/schedules",
+              "hancom/moldy/ko/usage"
+            ]
+          },
+          {
+            "group": "연결과 운영",
+            "pages": [
+              "hancom/moldy/ko/tools-mcp",
+              "hancom/moldy/ko/tools",
+              "hancom/moldy/ko/mcp-servers",
+              "hancom/moldy/ko/skills",
+              "hancom/moldy/ko/marketplace",
+              "hancom/moldy/ko/marketplace-install-publish",
+              "hancom/moldy/ko/access-oversight",
+              "hancom/moldy/ko/security-privacy"
+            ]
+          },
+          {
+            "group": "참조",
+            "pages": [
+              "hancom/moldy/ko/concepts",
+              "hancom/moldy/ko/api-reference",
+              "hancom/moldy/ko/api-cookbook",
+              "hancom/moldy/ko/api-endpoints",
+              "hancom/moldy/ko/api-auth",
+              "hancom/moldy/ko/api-chat-streaming",
+              "hancom/moldy/ko/error-reference",
+              "hancom/moldy/ko/faq",
+              "hancom/moldy/ko/documentation-workflow",
+              "hancom/moldy/ko/release-docs-updates",
+              "hancom/moldy/ko/changelog",
+              "hancom/moldy/ko/troubleshooting"
+            ]
+          }
+        ]
+      }
+    ],
+    "tabs": [
+      {
+        "tab": "API Reference",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "Moldy REST API",
+            "pages": [
+              "hancom/moldy/en/api-reference"
+            ],
+            "openapi": {
+              "source": "openapi/moldy-openapi.json",
+              "directory": "api-reference"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

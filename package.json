@@ -1,0 +1,25 @@
+{
+  "name": "docs-mold",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "capture": "node scripts/capture-screenshots.mjs",
+    "capture:ko": "node scripts/capture-screenshots.mjs --locale=ko",
+    "capture:en": "node scripts/capture-screenshots.mjs --locale=en",
+    "capture:ui": "node scripts/capture-ui-reference-images.mjs",
+    "visuals": "node scripts/capture-ui-reference-images.mjs",
+    "inventory": "node scripts/build-feature-inventory.mjs",
+    "openapi": "node scripts/export-openapi.mjs",
+    "api-docs": "node scripts/build-api-endpoints-docs.mjs",
+    "check:sensitive": "node scripts/check-sensitive-artifacts.mjs",
+    "docker:check": "node scripts/check-docker-setup.mjs",
+    "docker:build": "docker build -t docs-mold:dev .",
+    "docker:up": "docker compose up --build",
+    "docs:dev": "scripts/start-docs-dev.sh",
+    "docs:check": "cd src && PATH=\"/Users/chester/Library/Application Support/Logi/LogiPluginService/PluginHosts/node22/node/bin:$PATH\" /Users/chester/.nvm/versions/node/v24.13.1/bin/npx --yes mint@4.2.406 broken-links"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
+  }
+}

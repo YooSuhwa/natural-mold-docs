@@ -1,0 +1,43 @@
+---
+title: Manage tools
+description: Review the Moldy tool catalog and prepare tools for agents.
+---
+
+Tools are single actions an agent can execute, such as calling a service or running a registered operation. The Moldy Tools page shows registered tools and availability, while the agent settings page controls which tools are attached to each agent.
+
+Use this page to separate catalog readiness from runtime use. A tool can exist in the catalog and still be unavailable to an agent until it is attached and backed by the required credential.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/tools.png" alt="Moldy tools catalog screen" />
+
+## Tools vs. MCP tools
+
+| Type | Where it is managed | How it reaches an agent |
+| --- | --- | --- |
+| Built-in or registered tool | **Tools** page | Tool picker in agent settings |
+| MCP tool | Discovered from **MCP Servers** | MCP tool picker in agent settings |
+| Skill | **Skills** page | Skill picker in agent settings |
+
+Seeing a tool in the catalog does not automatically attach it to an agent. Attach the tool in agent settings before expecting the runtime to use it.
+
+## Before using a tool
+
+1. Check the credential type the tool requires.
+2. Confirm that a user or system credential exists.
+3. Attach the tool in agent settings.
+4. Run a test chat and confirm the tool is called.
+5. If it fails, review both the chat tool error and the credential test result.
+
+## Read tool results
+
+The chat page shows tool call results in the conversation flow. When a tool fails, check:
+
+- Whether the tool is attached to the agent
+- Whether the current user has the required credential
+- Whether the source MCP server is healthy for MCP tools
+- Whether the selected model supports tool calling
+
+## Operator and user scope
+
+Users manage their own agent tool choices and user credentials. Operators manage system credentials and System LLM, but user-owned secret values must not appear in public docs or screenshots.
+
+When documenting a tool, describe its required credential type and failure modes without including credential values. Test the tool in chat before treating it as available for a workflow.

@@ -1,0 +1,45 @@
+---
+title: API reference
+description: Moldy REST API 문서의 범위와 인증 방식을 설명합니다.
+---
+
+Moldy API reference는 실행 중인 백엔드의 `/openapi.json`에서 생성합니다. 이 문서 사이트에는 OpenAPI 스냅샷이 `src/openapi/moldy-openapi.json`으로 저장되며, API Reference 탭에서 엔드포인트별 상세 스키마를 확인할 수 있습니다.
+
+이 문서는 개발자용 API 문서의 진입점입니다. 인증 방식을 설명하고, 그룹별 endpoint 색인과 로그인, CSRF, 대화 스트리밍, Agent API, 파일, 메모리, trace 조회를 다루는 세부 가이드로 연결합니다.
+
+## 인증
+
+브라우저 앱은 로그인 후 발급되는 HttpOnly 쿠키와 CSRF 토큰으로 API를 호출합니다. 상태를 변경하는 요청은 CSRF 헤더가 필요합니다.
+
+자세한 인증 흐름은 [API 인증과 CSRF](/hancom/moldy/ko/api-auth)를 참고하세요.
+
+## 주요 API 그룹
+
+| 그룹 | 용도 |
+| --- | --- |
+| `auth` | 가입, 로그인, 로그아웃, 세션 확인 |
+| `audit` | 사용자와 운영자 활동 기록 |
+| `agent-api`, `agent-runtime-api` | 외부 Agent API 배포, 키, `/v1` 런타임 호출 |
+| `agents` | 에이전트 생성, 조회, 수정, 삭제 |
+| `builder` | 대화형 에이전트 생성 세션 |
+| `conversations` | 대화, 메시지, 스트리밍, 브랜치 |
+| `artifacts`, `memory` | 생성 파일과 장기 메모리 제어 |
+| `tools`, `mcp`, `skills` | 도구, MCP 서버, 스킬 관리 |
+| `credentials`, `models`, `system-llm-settings` | 자격증명, 모델, 시스템 LLM |
+| `triggers`, `usage`, `marketplace`, `shares` | 스케줄, 사용량, 마켓플레이스, 공개 공유 조회 |
+
+API 그룹은 Moldy 제품 영역과 대응됩니다. UI 화면이 바뀌면 관련 API 그룹을 확인하고 사용자 가이드와 OpenAPI 스냅샷을 함께 갱신하세요.
+
+## 개발자용 가이드
+
+| 가이드 | 다루는 내용 |
+| --- | --- |
+| [API Cookbook](/hancom/moldy/ko/api-cookbook) | 로그인, CSRF, 대화 스트리밍, artifact 다운로드, Agent API curl 예제 |
+| [백엔드 API 전체 목록](/hancom/moldy/ko/api-endpoints) | OpenAPI 스냅샷 기준 전체 endpoint 색인과 그룹별 용도 |
+| [API 인증과 CSRF](/hancom/moldy/ko/api-auth) | 로그인, 쿠키, CSRF, 운영자 권한 |
+| [채팅 스트리밍 API](/hancom/moldy/ko/api-chat-streaming) | 대화 생성, SSE, resume, edit, regenerate, trace |
+| [Agent API](/hancom/moldy/ko/agent-api) | 외부 배포, API 키, wait/stream/thread 런타임 호출 |
+
+<Tip>
+API 스냅샷을 갱신하려면 `pnpm run openapi`를 실행하세요.
+</Tip>

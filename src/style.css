@@ -1,0 +1,104 @@
+:root {
+  --moldy-accent-soft: #ecfdf5;
+}
+
+.moldy-screenshot {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 12px 0 28px;
+  border: 1px solid rgba(4, 120, 87, 0.18);
+  border-radius: 10px;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+}
+
+.moldy-muted {
+  color: #64748b;
+}
+
+.moldy-github-link,
+.moldy-language-switcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 999px;
+}
+
+.moldy-github-link {
+  color: #4b5563;
+  background: rgba(31, 41, 55, 0.04);
+  text-decoration: none;
+}
+
+.moldy-github-link:hover {
+  color: #111827;
+  background: rgba(31, 41, 55, 0.08);
+}
+
+.moldy-github-link::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27black%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Cpath%20d%3D%27M12%20.5C5.65.5.75%205.4.75%2011.75c0%204.99%203.24%209.22%207.73%2010.7.57.1.78-.25.78-.55v-2.1c-3.14.68-3.8-1.35-3.8-1.35-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69%201.13.08%201.73%201.16%201.73%201.16%201%201.72%202.64%201.22%203.28.93.1-.73.39-1.22.71-1.5-2.51-.29-5.15-1.26-5.15-5.6%200-1.24.44-2.25%201.16-3.04-.12-.29-.5-1.44.11-3%200%200%20.95-.3%203.1%201.16a10.8%2010.8%200%200%201%205.64%200c2.15-1.46%203.1-1.16%203.1-1.16.61%201.56.23%202.71.11%203%20.72.79%201.16%201.8%201.16%203.04%200%204.55-2.76%205.31-5.38%205.59.4.35.76%201.04.76%202.1v3.11c0%20.3.2.66.79.55%204.48-1.48%207.71-5.71%207.71-10.7C23.25%205.4%2018.35.5%2012%20.5Z%27/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27black%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Cpath%20d%3D%27M12%20.5C5.65.5.75%205.4.75%2011.75c0%204.99%203.24%209.22%207.73%2010.7.57.1.78-.25.78-.55v-2.1c-3.14.68-3.8-1.35-3.8-1.35-.51-1.3-1.25-1.65-1.25-1.65-1.02-.7.08-.69.08-.69%201.13.08%201.73%201.16%201.73%201.16%201%201.72%202.64%201.22%203.28.93.1-.73.39-1.22.71-1.5-2.51-.29-5.15-1.26-5.15-5.6%200-1.24.44-2.25%201.16-3.04-.12-.29-.5-1.44.11-3%200%200%20.95-.3%203.1%201.16a10.8%2010.8%200%200%201%205.64%200c2.15-1.46%203.1-1.16%203.1-1.16.61%201.56.23%202.71.11%203%20.72.79%201.16%201.8%201.16%203.04%200%204.55-2.76%205.31-5.38%205.59.4.35.76%201.04.76%202.1v3.11c0%20.3.2.66.79.55%204.48-1.48%207.71-5.71%207.71-10.7C23.25%205.4%2018.35.5%2012%20.5Z%27/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.dark .moldy-github-link {
+  color: #d1d5db;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .moldy-github-link:hover {
+  color: #f9fafb;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.moldy-language-switcher #localization-select-trigger {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  padding: 0;
+  background: rgba(31, 41, 55, 0.04);
+}
+
+.dark .moldy-language-switcher #localization-select-trigger {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.moldy-language-switcher #localization-select-trigger:hover {
+  background: rgba(31, 41, 55, 0.08);
+}
+
+.dark .moldy-language-switcher #localization-select-trigger:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.moldy-language-switcher #localization-select-trigger span,
+.moldy-language-switcher #localization-select-trigger svg {
+  display: none;
+}
+
+.moldy-language-switcher #localization-select-trigger::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background-color: #4b5563;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%2710%27/%3E%3Cpath%20d%3D%27M2%2012h20%27/%3E%3Cpath%20d%3D%27M12%202a15.3%2015.3%200%200%201%204%2010%2015.3%2015.3%200%200%201-4%2010%2015.3%2015.3%200%200%201-4-10%2015.3%2015.3%200%200%201%204-10z%27/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2024%2024%27%20fill%3D%27none%27%20stroke%3D%27black%27%20stroke-width%3D%272%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Ccircle%20cx%3D%2712%27%20cy%3D%2712%27%20r%3D%2710%27/%3E%3Cpath%20d%3D%27M2%2012h20%27/%3E%3Cpath%20d%3D%27M12%202a15.3%2015.3%200%200%201%204%2010%2015.3%2015.3%200%200%201-4%2010%2015.3%2015.3%200%200%201-4-10%2015.3%2015.3%200%200%201%204-10z%27/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.dark .moldy-language-switcher #localization-select-trigger::before {
+  background-color: #d1d5db;
+}
+
+@media (max-width: 1023px) {
+  .moldy-github-link,
+  .moldy-language-switcher {
+    display: none;
+  }
+}

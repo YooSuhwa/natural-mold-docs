@@ -1,0 +1,55 @@
+---
+title: View usage
+description: Review tokens, requests, estimated cost, and daily aggregates in Moldy.
+---
+
+**Settings > Usage** shows tokens, request count, and estimated cost collected from conversation runs. It helps users understand which agents and models are consuming runtime resources.
+
+The backend exposes summary, daily spend, and agent usage APIs scoped to user-owned data. Because cost depends on model catalog pricing metadata, usage reports should be read as model-run estimates unless the deployment also reconciles them with an external billing system.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/usage.png" alt="Moldy usage dashboard screen" />
+
+## Key metrics
+
+| Metric | Meaning |
+| --- | --- |
+| Cost | Estimated cost from model pricing metadata and usage |
+| Input tokens | Prompt tokens |
+| Output tokens | Completion tokens |
+| Requests | Model calls or conversation runs |
+| Average cost/request | Cost divided by request count |
+
+In chat, the token usage popover can show prompt, completion, cache token, and estimated cost information. Use the chat-level popover for one run and the Usage page for aggregate investigation.
+
+## Aggregation axes
+
+`/api/usage/daily` aggregates by `target_kind`.
+
+| target_kind | Description |
+| --- | --- |
+| `user` | Current user |
+| `agent` | User-owned agents |
+| `model` | Models called by user-owned agents |
+
+`group_by=date` returns one total per day. `group_by=target` returns date/target rows for multi-series charts.
+
+## Things to know
+
+- Cost depends on model catalog pricing metadata.
+- Missing or incorrect model pricing makes cost estimates inaccurate.
+- Older messages without usage source data may be limited in reports.
+- Scheduled runs are agent runs and can affect usage.
+
+Usage data is most useful when it is compared with the agent, model, and schedule that produced the run. A sudden cost change usually needs conversation history and schedule history, not only the summary chart.
+
+## Download data
+
+Use CSV download to export the visible period and grouping. For billing or anomaly review, compare the CSV with model-level details.
+
+## Investigate anomalies
+
+1. Narrow the period to the last 7 days or the incident window.
+2. Check cost by agent.
+3. Open conversations and schedules for high-cost agents.
+4. Check whether fallback failures are repeated.
+5. Adjust max_tokens, schedule frequency, or tool-use instructions.

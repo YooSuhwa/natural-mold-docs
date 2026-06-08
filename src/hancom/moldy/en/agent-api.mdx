@@ -1,0 +1,75 @@
+---
+title: Agent API
+description: Deploy Moldy agents for external server-side calls, create API keys, and use wait, stream, thread, and compatibility endpoints.
+---
+
+Agent API exposes selected Moldy agents through server-side API keys. It is managed from **Settings > Agent API** and implemented through `/api/agent-api/*` control-plane endpoints plus `/v1/*` runtime endpoints.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/settings-agent-api.png" alt="Moldy Agent API settings page with deployment candidates, API keys, and run endpoints" />
+
+## Deployment model
+
+Only eligible agents can be deployed. The current UI marks agents as blocked when API deployment requires agent-fixed credential usage and the agent is still configured for per-user credential resolution.
+
+| Concept | Meaning |
+| --- | --- |
+| Deployment candidate | An owned agent that may become callable through Agent API |
+| Deployment | A public ID mapped to one agent |
+| API key | A server-side secret shown once at creation time |
+| Scope | `invoke`, `stream`, `background`, or `read` capability granted to the key |
+
+Deployments can allow streaming, allow background runs, set a per-minute rate limit, and set a daily token limit. Limits are optional fields in the API schema.
+
+## Create a deployment and key
+
+1. Open **Settings > Agent API**.
+2. Review deployment candidates.
+3. For an eligible agent, click **Deploy**.
+4. Create an API key.
+5. Choose scopes and whether the key can call all deployments or only selected deployments.
+6. Copy the key when it is shown. Moldy does not show the cleartext key again.
+7. Store the key in server-side secret storage and call the `/v1` endpoint from server code.
+
+<Warning>
+Agent API keys are not browser keys. Do not paste them into public client-side code, screenshots, docs, or chat transcripts.
+</Warning>
+
+## Runtime endpoints
+
+| Endpoint | Use |
+| --- | --- |
+| `POST /v1/runs/wait` | Blocking request/response agent run |
+| `POST /v1/runs/stream` | Streaming run with server-sent events |
+| `POST /v1/threads` | Create a thread wrapper around a deployed agent conversation |
+| `GET /v1/threads/{thread_id}` | Read thread metadata |
+| `POST /v1/threads/{thread_id}/runs/wait` | Blocking run in an existing thread |
+| `POST /v1/threads/{thread_id}/runs/stream` | Streaming run in an existing thread |
+| `GET /v1/agents` | List deployments visible to the API key |
+| `GET /v1/health` | Public runtime health check |
+
+Compatibility adapters are also present for chat messages, workflow run, and chat completions. Use them only when the integration expects those request shapes.
+
+## Security and audit
+
+Control-plane deployment and key changes write audit events. Runtime calls are attributed to the API key actor, not a browser user session. This means support investigations should keep the API key name, deployment public ID, run ID, request metadata keys, and outcome together.
+
+Revoke a key immediately when it may have been copied into an unsafe location. Revoked keys remain listed with status so operators can understand what changed.
+
+## Failure checks
+
+| Symptom | Check |
+| --- | --- |
+| Agent cannot be deployed | Confirm the agent uses a fixed credential path required by API deployment |
+| Key creation is disabled | Deploy at least one eligible agent first |
+| `/v1/runs/stream` fails | Confirm the key has `stream` scope and the deployment allows streaming |
+| `/v1/agents` is empty | Check whether the key allows all deployments or is scoped to selected deployments |
+| Runtime returns authorization errors | Confirm key prefix/last four, revoked status, expiry, scopes, and deployment status |
+
+## Related APIs
+
+- `/api/agent-api/deployment-candidates`
+- `/api/agent-api/deployments`
+- `/api/agent-api/keys`
+- `/v1/runs/wait`, `/v1/runs/stream`
+- `/v1/threads`, `/v1/agents`
+

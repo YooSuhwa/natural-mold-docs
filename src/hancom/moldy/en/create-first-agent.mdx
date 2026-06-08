@@ -1,0 +1,88 @@
+---
+title: Create your first agent
+description: Create and validate a Moldy agent with the conversational builder, manual setup, or a template.
+---
+
+Moldy offers three creation paths for the same outcome: a saved agent that can run in chat. You can build by chat, configure the agent manually, or start from a template, then validate the result in the agent page.
+
+The actual routes are `/agents/new`, `/agents/new/conversational`, `/agents/new/manual`, and `/agents/new/template`. This guide focuses on what to verify after each path rather than recommending one permanent workflow for every team.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-create.png" alt="Moldy new agent start screen" />
+
+## Choose a creation path
+
+| Path | Use when | Check after creation |
+| --- | --- | --- |
+| Build by Chat | You want to describe the goal and let Moldy propose configuration | Proposed instructions, tools, and model |
+| Build Manually | You already know the settings you need | Model, tools, skills, middleware, schedules |
+| Start from a template | You want to start from a prepared workflow pattern | Template instructions and required credentials |
+
+## Build by Chat
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-create-conversational.png" alt="Moldy conversational agent builder screen" />
+
+The conversational builder creates an agent draft from your description. The backend supports builder sessions, builder messages, resume, and confirm APIs, so the configuration can be reviewed step by step.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-create-conversational-progress.png" alt="Moldy conversational builder progress screen with an eight-phase timeline and review card" />
+
+The builder runs through eight phases: project initialization, intent analysis, tool recommendations, middleware recommendations, system prompt generation, image choice, settings save, and final build confirmation. When a review card appears, approve it or send revision feedback before continuing.
+
+Good requests include:
+
+- The job the agent should perform
+- Inputs or external services it should use
+- Desired output format
+- Schedule, if automation is needed
+- Actions that should be forbidden or confirmed
+
+```txt
+Every Monday morning, summarize last week's usage.
+List the top three highest-cost agents and possible reasons in a table.
+```
+
+## Build manually
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-create-manual.png" alt="Moldy manual agent editor screen" />
+
+Manual setup exposes nearly the same fields as the agent settings page from the beginning.
+
+| Field | Description |
+| --- | --- |
+| Name/description | Used in dashboard, sidebar, and shared views |
+| Instructions | Agent role and response rules |
+| Model | Primary model and model parameters |
+| Tools/MCP tools | Actions the agent can execute |
+| Skills | Reusable knowledge and files |
+| Sub-agents | Helper execution units |
+| Middleware | Runtime extension settings |
+| Openers | Suggested starter questions |
+| Schedules | Automatic triggers |
+
+Manual setup requires at least a name and model before saving.
+
+## Start from a template
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-templates.png" alt="Moldy agent template gallery" />
+
+Templates are starting points with initial instructions and tool choices. After creation, they can be edited like any other agent.
+
+When using a template, check:
+
+- Whether required tools are available to the current user
+- Whether required user credentials are registered
+- Whether template instructions match your actual workflow
+- Whether name, description, and icon are ready before sharing or publishing
+
+## First validation
+
+1. Open the agent page.
+2. Send a short test message.
+3. If tools are called, review the tool result panel.
+4. If behavior is wrong, update instructions, model, or tools in [agent settings](/hancom/moldy/en/agent-settings).
+5. Confirm requests and cost in Usage.
+
+The first validation is complete when the agent responds in the expected format, uses only the intended tools, and records usage. If the builder produced a draft, treat the first validation as a configuration review before sharing the agent with other users.
+
+<Tip>
+Start with a small request that does not need tools. Once the base response format is right, add tools and schedules.
+</Tip>

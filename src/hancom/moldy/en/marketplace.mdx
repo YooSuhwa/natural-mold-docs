@@ -1,0 +1,58 @@
+---
+title: Explore the marketplace
+description: Find Moldy skills, agents, and MCP resources and understand their status.
+---
+
+The marketplace is the Moldy catalog for shared agents, MCP resources, and skills. Users can search resources, inspect version and credential requirements, install items, and see whether an installed item needs setup or has an available update.
+
+The current implementation handles `agent`, `mcp`, and `skill` resource types. This page documents the catalog and moderation behavior confirmed in the Moldy source.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/marketplace.png" alt="Moldy marketplace list screen" />
+
+## Find resources
+
+The marketplace list API supports these filters.
+
+| Filter | Description |
+| --- | --- |
+| resource type | `agent`, `mcp`, `skill` |
+| query | Search name and description |
+| visibility | private, restricted, public, unlisted, system |
+| category | Category |
+| installed | Installed state |
+| install state | active, needs_setup, disabled, uninstalled |
+| support level | Execution support level |
+| source kind | created/imported/k-skill and other origins |
+| listed | Operator listing state |
+
+## Read resource cards
+
+Cards can show:
+
+- Name, description, and icon
+- Resource type
+- Origin summary
+- Publication summary
+- Credential summary
+- Installation status
+- Update available
+- Execution profile
+- Latest version information
+
+## Item detail
+
+The detail page shows latest version, release notes, credential requirements, installation state, and publication state. Installation and update flows are covered in [Install and publish marketplace items](/hancom/moldy/en/marketplace-install-publish).
+
+Credential requirements are especially important on detail pages because installation can remain in `needs_setup` until the current user binds the required credential. Treat item detail as the source for setup requirements before running the installed resource.
+
+## Operator moderation
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/marketplace-moderation.png" alt="Moldy marketplace moderation screen" />
+
+Operators use marketplace moderation to manage public item listing state and inspect k-skill sync status. Listing moderation requires `super_user` and is used to approve or unlist public catalog items.
+
+Marketplace moderation changes catalog exposure, not the underlying skill, agent, or MCP implementation. When a public item is not visible in the catalog, check both visibility and listing state.
+
+<Note>
+The marketplace resource types confirmed in Moldy source are agent, mcp, and skill. External channel catalogs that are not implemented in Moldy are not included here.
+</Note>

@@ -1,0 +1,88 @@
+---
+title: Troubleshooting
+description: Resolve common Moldy login, model, credential, MCP, schedule, marketplace, and share-link issues.
+---
+
+Troubleshooting Moldy works best when you collect evidence from the UI, network response, runtime trace, and related configuration together. A screen message alone rarely identifies whether the problem is authentication, permission, credential scope, model configuration, or tool runtime behavior.
+
+To protect ownership boundaries, Moldy can return the same not-found style response for missing and unauthorized resources. When a resource is not visible, verify ownership and `super_user` permission before assuming it was deleted.
+
+For detailed status-code, card-state, MCP, artifact, and Agent API classification, see the [Error reference](/hancom/moldy/en/error-reference).
+
+## Login returns to the login screen
+
+- Confirm the frontend API base URL points to the running backend port.
+- Confirm backend CORS origins include the frontend origin.
+- Check that browser cookies are not blocked.
+- Confirm `/api/auth/me` returns the current user.
+- If a mutation fails after session expiry, sign in again and retry.
+
+If login succeeds once and then fails on mutation, inspect CSRF handling before changing account data.
+
+## State-changing requests fail
+
+- Confirm `POST`, `PATCH`, and `DELETE` requests include CSRF.
+- If calling the API outside the browser app, send both login cookies and CSRF header.
+- For operator endpoints, confirm the account has `super_user`.
+
+## Builder or Assistant does not work
+
+- Open **System Credentials** with an operator account.
+- Confirm **System LLM Settings** has primary text, fallback text, and image slots configured.
+- Run a model health check or model test.
+- Confirm the system credential definition matches an LLM provider.
+
+## Chat response does not arrive or disconnects
+
+- Confirm the agent has a primary model.
+- Confirm a user LLM credential is available.
+- If reconnecting, check the run-id-based `/stream` path.
+- If the run stopped after a tool interrupt, use the resume flow.
+- Open traces to find the failed step and error message.
+
+## Tool execution fails
+
+- Confirm the tool is attached to the agent.
+- Confirm the required user credential exists.
+- Confirm the selected model supports tool calling.
+- Read the tool result panel error first.
+
+## MCP server probe or discovery fails
+
+- `streamable_http` and `sse` transports require URL.
+- `stdio` transport requires command.
+- Check header/env var credential templates.
+- Confirm the selected credential belongs to the current user.
+- For saved servers, rerun health check and tool discovery.
+
+## Schedule does not run
+
+- Confirm trigger status is `active`.
+- Check `next_run_at`, timezone, cron expression, and end_at.
+- Confirm max_runs has not been reached.
+- Check whether failures triggered auto-pause.
+- Confirm result conversation is linked through conversation policy or target conversation.
+
+## Marketplace install is `needs_setup`
+
+- Check the latest version credential requirements.
+- Bind user credentials for required requirements.
+- Confirm credential definition matches the requirement.
+- Choose whether update should overwrite the current resource or install a new copy.
+
+## Share link returns 404
+
+- Check whether the share token was revoked.
+- Ask the conversation owner to create a fresh active share link.
+- Public endpoints can return 404 for both unknown and revoked tokens.
+
+## Regenerate screenshots
+
+```bash
+pnpm run capture
+pnpm run check:sensitive
+```
+
+The capture script logs in with `.env`, then masks emails, user names, internal URLs, and real cost numbers before saving screenshots.
+
+Screenshot regeneration is part of documentation verification. After new screenshots are captured, inspect any sensitive screen manually before publishing the docs.

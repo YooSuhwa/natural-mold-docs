@@ -1,0 +1,142 @@
+---
+title: Quickstart
+description: Log in to Moldy, verify operator setup, create your first agent, run a chat, and confirm usage.
+---
+
+This quickstart takes a new Moldy user from login to a validated agent run. By the end, you should have an authenticated session, a configured or selected model, a saved agent, one successful chat response, and usage data for that run.
+
+This guide assumes the Moldy app is running at `http://localhost:3000` and the API is running at `http://localhost:8001`. New users start with an account from an operator. Operators preparing a new environment should verify system credentials and System LLM first.
+
+<Callout icon="rocket" color="#047857" iconType="regular">
+The goal is to create your first agent, run a test chat, and confirm that usage is recorded.
+</Callout>
+
+## Before you start
+
+| Requirement | Where to check |
+| --- | --- |
+| Moldy account | `/login` or `/register` |
+| Model credential | **Settings > Credentials** or operator-only **System Credentials** |
+| Model to call | **Settings > Models** |
+| Operator setup | **Settings > System Credentials**, **System LLM Settings** |
+| Tool execution | **Tools**, **MCP Servers**, **Skills** |
+| Optional memory/files | **Settings > Memory**, **Settings > Files** |
+
+## 1. Log in
+
+Use the account provided by your operator. Moldy uses HttpOnly cookies and CSRF tokens, so browser API calls are authenticated after login.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/login.png" alt="Moldy login screen" />
+
+If the dashboard opens, the account and API connection are working. If you return to the login page, start with [Troubleshooting](/hancom/moldy/en/troubleshooting#login-returns-to-the-login-screen).
+
+## 2. Verify operator setup
+
+For a new environment, an operator should check:
+
+<Steps>
+  <Step title="Check system credentials">
+    Register an LLM provider credential in **System Credentials**. System credentials are operator-scoped secrets and are not shown in user pickers.
+  </Step>
+  <Step title="Check System LLM role slots">
+    In **System LLM Settings**, configure primary text, fallback text, and image slots. Builder, Assistant, and image generation rely on these settings.
+  </Step>
+  <Step title="Check model health">
+    Confirm that the target model appears on the **Models** page and run a model test when needed.
+  </Step>
+</Steps>
+
+Regular users cannot change operator settings. They should prepare user credentials for the agents they run.
+
+## 3. Choose a creation path
+
+From the dashboard, select **New Agent**.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-create.png" alt="Moldy new agent start screen" />
+
+| Path | Use when |
+| --- | --- |
+| Build by Chat | You want to describe the agent and let Moldy propose configuration |
+| Build Manually | You already know the instructions, model, tools, skills, and middleware |
+| Start from a template | You want to start from a prepared workflow pattern |
+
+For first use, **Build by Chat** is usually easiest. Operators and power users may prefer **Build Manually** to configure model, fallback, tools, and schedules directly.
+
+## 4. Create the agent
+
+For conversational building, describe the goal, inputs, output format, external services, and schedule in one request.
+
+```txt
+Every Monday morning, summarize last week's usage.
+List the top three highest-cost agents and possible reasons in a table.
+```
+
+For manual setup, fill at least:
+
+- Name and description
+- System instructions
+- Primary model
+- Required tools, MCP tools, and skills
+- Sub-agents, middleware, openers, and schedules when needed
+
+## 5. Run a test chat
+
+After the agent is created, open the agent page and send a small request first.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-chat.png" alt="Moldy agent chat screen" />
+
+Check:
+
+- Whether the agent follows the requested tone and format
+- Whether expected tool calls happen
+- Whether tool results appear in the conversation
+- Whether token/cost information appears in messages or usage
+- Whether approval or resume flows continue correctly
+
+## 6. Adjust and save
+
+If the response is not what you expected, update [agent settings](/hancom/moldy/en/agent-settings).
+
+| Problem | Where to adjust |
+| --- | --- |
+| Wrong response format | Instructions |
+| Low answer quality | Model, temperature, top_p |
+| Frequent model failure | Fallback models |
+| Tool not used | Tool/MCP attachment and instructions |
+| Missing starter prompts | Openers |
+| Needs automation | Schedule |
+
+## 7. Confirm usage
+
+After test chat, open **Settings > Usage** and confirm that requests, tokens, and cost are recorded. Usage APIs aggregate by user-owned agents and models.
+
+This final check proves that the chat path reached the model runtime and wrote usage metadata. If the chat succeeds but usage is empty, inspect the model pricing metadata and conversation run details.
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Manage agent settings" icon="settings" href="/hancom/moldy/en/agent-settings">
+    Tune fallback models, tools, MCP tools, skills, openers, and schedules.
+  </Card>
+  <Card title="Register MCP servers" icon="server" href="/hancom/moldy/en/mcp-servers">
+    Probe external MCP servers, discover tools, and attach them to agents.
+  </Card>
+  <Card title="Settings and navigation" icon="settings" href="/hancom/moldy/en/settings">
+    Find moved menus such as credentials, models, schedules, usage, memory, and files.
+  </Card>
+  <Card title="Memory" icon="brain" href="/hancom/moldy/en/memory">
+    Configure user memory, agent overrides, and save-review behavior.
+  </Card>
+  <Card title="Files and artifacts" icon="files" href="/hancom/moldy/en/files-artifacts">
+    Preview, favorite, download, and trace generated files.
+  </Card>
+  <Card title="Agent API" icon="code" href="/hancom/moldy/en/agent-api">
+    Deploy eligible agents and create server-side API keys.
+  </Card>
+  <Card title="Install and publish marketplace items" icon="building-store" href="/hancom/moldy/en/marketplace-install-publish">
+    Install shared skills and bind required credentials.
+  </Card>
+  <Card title="Troubleshooting" icon="help-circle" href="/hancom/moldy/en/troubleshooting">
+    Resolve login, model, MCP, schedule, and marketplace issues.
+  </Card>
+</CardGroup>

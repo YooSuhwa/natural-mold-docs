@@ -1,0 +1,184 @@
+---
+title: Chat component gallery
+description: Understand Moldy inline chat components, cards, tool results, approvals, and generated file UI.
+---
+
+Moldy chat renders more than plain text. Markdown, code, diagrams, math, images, search results, tool calls, approvals, user input, memory proposals, sub-agents, Builder steps, and generated files can each appear as dedicated components.
+
+Use this page to quickly interpret what you see in chat. For the full conversation workflow, see [Chat with an agent](/hancom/moldy/en/chat-with-agent). For the streaming API, see [Chat streaming API](/hancom/moldy/en/api-chat-streaming).
+
+The gallery below is captured from real Moldy frontend components and styles. It uses the product `ToolUI`, Markdown renderer, and Builder card components rather than synthetic mockups.
+
+## Real UI Capture Gallery
+
+### Message Rendering
+
+**Markdown body**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-markdown.png" alt="Moldy chat Markdown body rendering" />
+
+**Code block**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-code.png" alt="Moldy chat code block rendering" />
+
+**Mermaid diagram**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-mermaid.png" alt="Moldy chat Mermaid diagram rendering" />
+
+**KaTeX math**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-katex.png" alt="Moldy chat KaTeX formula rendering" />
+
+**Inline image**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-image.png" alt="Moldy chat inline image rendering" />
+
+### Tool And Execution Cards
+
+**Plan card**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-plan.png" alt="Moldy chat plan card" />
+
+**Search result card**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-search.png" alt="Moldy chat search result card" />
+
+**Read file**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-file-read.png" alt="Moldy chat read file card" />
+
+**Write file**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-file-write.png" alt="Moldy chat write file card" />
+
+**Edit file**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-file-edit.png" alt="Moldy chat edit file card" />
+
+**Generic tool card**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-generic-tool.png" alt="Moldy chat generic tool card" />
+
+**Approval card**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-approval.png" alt="Moldy chat approval card" />
+
+**User input card**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-user-input.png" alt="Moldy chat user input card" />
+
+**Memory proposal**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-memory.png" alt="Moldy chat memory proposal card" />
+
+**Sub-agent call**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-sub-agent.png" alt="Moldy chat sub-agent card" />
+
+**Deep research summary**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-deep-research.png" alt="Moldy chat deep research summary card" />
+
+### Builder Cards
+
+**Phase timeline live flow**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-create-conversational-progress.png" alt="Moldy conversational builder phase timeline real progress screen" />
+
+**Recommendation review**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-builder-recommendation.png" alt="Moldy Builder recommended tools review card" />
+
+**System prompt approval**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-builder-prompt.png" alt="Moldy Builder system prompt approval card" />
+
+**Image choice**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-builder-image-choice.png" alt="Moldy Builder image choice card" />
+
+**Image approval**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-builder-image-approval.png" alt="Moldy Builder image approval card" />
+
+**Draft configuration preview**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-builder-draft-config.png" alt="Moldy Builder draft configuration preview card" />
+
+**Final configuration approval**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/chat-inline-builder-draft-approval.png" alt="Moldy Builder final configuration approval card" />
+
+## Component matrix
+
+| Component | When it appears | User action | Failure or caution |
+| --- | --- | --- | --- |
+| Markdown body | General answers, explanations, summaries | Read headings, tables, and links | Tables can look incomplete while streaming |
+| Code block | Code, logs, configuration examples | Check language label and content | Verify runnable code separately |
+| Mermaid | `mermaid` code blocks | Inspect diagram structure | Syntax errors may stay as code |
+| KaTeX math | Formula or calculation explanation | Check result and unit | Recalculate business-critical math |
+| Image | Generated image, attachment, tool result | Expand or download | Review visual sensitive data before sharing |
+| Search result card | Search tool call | Check title, URL, and snippet | Judge external source trust separately |
+| File tool card | File read/write/edit | Check target file and result | Confirm path, permission, overwrite behavior |
+| Generic tool card | Tool without dedicated UI | Inspect input, status, result, error | Card errors can be more precise than final text |
+| Plan card | Todo or staged work | Watch active and completed items | If stuck, inspect trace and tool state |
+| Approval card | Tool, prompt, or recommendation approval | Approve, reject, or edit JSON | Expiry can prevent resume |
+| User input card | Clarifying question or HITL step | Type or choose an answer | Wrong input changes the remaining run |
+| Memory card | Memory proposal or save event | Review before saving | Do not approve sensitive content |
+| Sub-agent card | Delegated task | Check delegate name and result | Inspect the parent trace when it fails |
+| Builder card | Agent creation builder | Approve recommendations, image, draft config | Review settings before final confirmation |
+| Artifact card | Generated file record | Preview, favorite, download | Check that status is `ready` |
+
+## Read component state
+
+| State | Meaning | Next action |
+| --- | --- | --- |
+| Streaming | Message and cards are still forming | Wait for completion |
+| Waiting | Approval, user input, or tool response is required | Act inside the card |
+| Complete | The result was incorporated into the response | Review summary, files, trace, usage |
+| Failed | Tool, credential, model, MCP, or storage failed | Inspect error card and trace first |
+| Expired | Approval or input window passed | Retry with a new message or check resume |
+
+## Approval cards
+
+Approval cards mark a point where the user decides whether execution should continue. Depending on context, Moldy can show tool approval, prompt approval, or recommendation approval.
+
+1. Read the card title and target tool.
+2. Inspect the input JSON or summary.
+3. Check for external calls, file changes, sharing, or credential use.
+4. Approve only when the action is expected.
+5. Use edited JSON when the action is right but the input needs changes.
+6. Reject uncertain actions and update agent instructions or tool settings.
+
+## Memory cards
+
+Memory cards show information that may be saved into long-term memory. Memory can improve future conversations, but it also persists information.
+
+| Check | Standard |
+| --- | --- |
+| Accuracy | The user really wants this remembered |
+| Sensitivity | No passwords, tokens, PII, or customer secrets |
+| Scope | The memory belongs globally or only to this agent |
+| Wording | Short, editable, and durable |
+
+## Artifact cards
+
+Artifact cards are the closest entry point for files generated during a conversation. The same files can also appear in [Files and artifacts](/hancom/moldy/en/files-artifacts) and the [Artifact viewer matrix](/hancom/moldy/en/artifact-viewers).
+
+| Check on the card | Why it matters |
+| --- | --- |
+| File name and extension | Helps explain preview provider selection |
+| Status | Preview/download can fail before `ready` |
+| Source tool call | Shows which tool created the file |
+| Version | Confirms whether the file changed |
+| Share state | Indicates whether public sharing may expose it |
+
+## Update docs when components change
+
+When a chat component is added or renamed, update:
+
+- [Chat with an agent](/hancom/moldy/en/chat-with-agent)
+- [Files and artifacts](/hancom/moldy/en/files-artifacts)
+- [Error reference](/hancom/moldy/en/error-reference)
+- `src/llms.txt`
+- Changelog

@@ -1,0 +1,38 @@
+---
+title: Accounts and login
+description: Understand Moldy account creation, login, and operator permissions.
+---
+
+Moldy accounts use email and password authentication for the browser application. After login, authenticated users can manage their own agents, conversations, credentials, and tool configuration, while users with `super_user` permission can also access operator settings.
+
+The login state is verified by the backend session and reflected in permission-based menus. If a user can sign in but cannot see system settings, treat it as an operator-permission issue rather than a general login issue.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/login.png" alt="Moldy login form with email and password fields" />
+
+## Log in
+
+1. Go to `/login`.
+2. Enter your email and password.
+3. Select **Log in**.
+4. After success, Moldy opens the dashboard.
+
+Successful login should create the browser session, allow `/api/auth/me` to return the current user, and show the dashboard. If any one of those checks fails, use [Troubleshooting](/hancom/moldy/en/troubleshooting) to inspect cookies, CSRF, and API base URL settings.
+
+## Create an account
+
+Use `/register` to create an account. In development, the first registered user can become an operator depending on backend configuration. In production, confirm the first-operator policy before deployment.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/register.png" alt="Moldy registration screen with name, email, password, and terms agreement" />
+
+## Permission-based menus
+
+| Permission | Main visible menus |
+| --- | --- |
+| User | Home, New Agent, Tools, MCP Servers, Skills, Marketplace, Credentials, Models, Schedules, Usage |
+| Operator | User menus + System Credentials, System LLM Settings, marketplace moderation |
+
+Menu visibility is a usability signal, not the only protection boundary. Operator APIs still validate `super_user` on the backend, and state-changing API requests still require the authenticated session and CSRF validation.
+
+<Warning>
+Do not include real emails, passwords, API keys, or internal URLs in documentation or screenshots. The screenshots in this site are masked before they are saved.
+</Warning>

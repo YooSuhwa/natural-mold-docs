@@ -1,0 +1,81 @@
+---
+title: FAQ
+description: Answers to common Moldy documentation, feature, permission, chat, file, API, and operations questions.
+---
+
+Use the FAQ when you need a quick answer before reading a full guide. Questions that need procedures link to the relevant page.
+
+## Getting started and menus
+
+### Which page should I read first?
+
+New users should start with the [quickstart](/hancom/moldy/en/quickstart). Use [Moldy overview](/hancom/moldy/en) for product structure and [Scenarios and recipes](/hancom/moldy/en/recipes) for goal-based workflows.
+
+### How are Tools, MCP Servers, and Skills different?
+
+Tools are the Moldy tool catalog, MCP Servers connect external MCP tool collections, and Skills package reusable instructions/files. See [Tools, MCP, and Skills](/hancom/moldy/en/tools-mcp).
+
+### Where is the settings menu?
+
+Open the settings sidebar from the user menu. Settings includes Memory, Files, Agent API, Credentials, Models, Schedules, Usage, and operator-only Admin features.
+
+## Agents and chat
+
+### How do I create a new agent?
+
+Use **New Agent** from the dashboard and choose the conversational builder, manual setup, or a template. See [Create your first agent](/hancom/moldy/en/create-first-agent).
+
+### Chat shows many cards. How do I read them?
+
+Cards show tool execution, approvals, user input, memory proposals, generated files, and Builder phases. See the [Chat component gallery](/hancom/moldy/en/chat-components).
+
+### What should I do when a response stops mid-stream?
+
+Check the conversation trace and stream reconnect path first. If the run is waiting on interrupt or approval, resume may be required. See [Chat streaming API](/hancom/moldy/en/api-chat-streaming).
+
+## Files and sharing
+
+### Where can I find generated files later?
+
+Use the chat artifact card, the right artifact panel, or **Settings > Files**. Files is best for searching across agents and conversations.
+
+### Can Moldy preview DOCX, XLSX, PPTX, or HWPX?
+
+Moldy includes preview providers for several document formats. See the [Artifact viewer matrix](/hancom/moldy/en/artifact-viewers) for supported formats and fallbacks.
+
+### Are share links safe?
+
+Share links are unauthenticated read-only public access. Review messages, tool results, and file previews before creating one. See [Security and privacy](/hancom/moldy/en/security-privacy).
+
+## API and operations
+
+### What is the difference between `/api/*` and `/v1/*`?
+
+`/api/*` endpoints are browser-app endpoints that use session cookies and CSRF for mutations. `/v1/*` endpoints are Agent API runtime endpoints that use server-side API keys.
+
+### Where are API examples?
+
+Use the [API Cookbook](/hancom/moldy/en/api-cookbook) for curl flows. Use the [endpoint index](/hancom/moldy/en/api-endpoints) for the full OpenAPI list.
+
+### Which features are operator-only?
+
+System credentials, System LLM, model catalog mutations, marketplace listing, and all-activity views require `super_user` permission.
+
+### How should docs stay updated?
+
+When features, menus, APIs, or screens change, follow [Releases and documentation updates](/hancom/moldy/en/release-docs-updates) to update KO/EN docs, OpenAPI, screenshots, `llms.txt`, and changelog together.
+
+## Troubleshooting
+
+### What should I check for `403`?
+
+For browser session APIs, check CSRF token and `super_user` permission. For Agent API, check key scope, deployment permission, and revoked status.
+
+### Does `404` always mean the resource was deleted?
+
+No. Moldy can return the same 404-style response for missing and unauthorized resources. Check current user, resource owner, and share token state.
+
+### What should I include in a bug report?
+
+Include non-secret identifiers such as endpoint, status code, route, conversation ID, run ID, trace ID, artifact ID, and deployment public ID. Do not include cookies, CSRF tokens, API keys, or credential secrets.
+

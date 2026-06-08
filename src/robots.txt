@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# AI crawler guidance
+# Use /llms.txt for a concise map of the Moldy documentation.
+

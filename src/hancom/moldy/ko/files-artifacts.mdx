@@ -1,0 +1,166 @@
+---
+title: 파일과 아티팩트
+description: Moldy 파일 라이브러리에서 에이전트 대화 중 생성된 파일을 미리보기, 즐겨찾기, 다운로드, 추적하는 방법을 설명합니다.
+---
+
+Moldy는 에이전트 실행 중 생성된 파일을 artifact로 기록합니다. 파일은 대화 안에서 보일 수 있고, 공유된 경우 공개 공유 화면에 포함될 수 있으며, 현재 사용자의 Files 리소스 페이지에서 모아 볼 수 있습니다.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/settings-artifacts.png" alt="artifact 필터, 파일 목록, 미리보기 패널, 최근 파일을 보여주는 Moldy 파일 화면" />
+
+## 기록되는 정보
+
+artifact에는 file path, display name, MIME type, extension, kind, size, hash, status, source tool call, run ID, conversation, agent, current version, preview URL, download URL이 저장됩니다.
+
+지원하는 artifact kind는 `image`, `video`, `audio`, `pdf`, `markdown`, `html`, `code`, `document`, `data`, `cad`, `other`입니다.
+
+| Status | 의미 |
+| --- | --- |
+| `writing` | 파일을 수집하거나 업데이트하는 중 |
+| `ready` | preview/download 가능 |
+| `deleted` | 대화 화면에서 삭제됨 |
+| `failed` | 수집 또는 저장 실패 |
+
+## 지원 파일 형식과 뷰어
+
+Moldy는 artifact의 kind, extension, MIME type을 기준으로 preview provider를 선택합니다. 같은 파일은 대화 안의 artifact card, 오른쪽 artifact 패널, **Settings > Files** 라이브러리에서 열 수 있으며, 지원되지 않는 형식은 fallback 카드에서 다운로드로 이어집니다.
+
+형식별 preview, download, 공유 동작을 더 자세히 보려면 [아티팩트 뷰어 매트릭스](/hancom/moldy/ko/artifact-viewers)를 참고하세요.
+
+### 포맷별 실제 뷰어 예시
+
+아래 이미지는 Moldy artifact preview provider를 실제로 렌더링해 캡처한 화면입니다. 같은 artifact라도 파일 형식에 따라 media player, PDF embed, sandboxed HTML, Markdown renderer, 표 뷰어, 문서 뷰어, fallback download 카드처럼 다른 UI로 열립니다.
+
+**이미지 viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-image.png" alt="Moldy 이미지 artifact viewer" />
+
+**Audio viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-audio.png" alt="Moldy audio artifact viewer" />
+
+**Video viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-video.png" alt="Moldy video artifact viewer" />
+
+**PDF viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-pdf.png" alt="Moldy PDF artifact viewer" />
+
+**HTML viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-html.png" alt="Moldy HTML artifact viewer" />
+
+**Markdown viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-markdown.png" alt="Moldy Markdown artifact viewer" />
+
+**Mermaid viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-mermaid.png" alt="Moldy Mermaid artifact viewer" />
+
+**CSV/TSV table viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-csv.png" alt="Moldy CSV artifact viewer" />
+
+**JSON viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-json.png" alt="Moldy JSON artifact viewer" />
+
+**YAML/TOML viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-yaml.png" alt="Moldy YAML artifact viewer" />
+
+**Code viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-code.png" alt="Moldy code artifact viewer" />
+
+**Text/log viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-text.png" alt="Moldy text artifact viewer" />
+
+**DOCX viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-docx.png" alt="Moldy DOCX artifact viewer" />
+
+**XLS/XLSX viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-xlsx.png" alt="Moldy XLSX artifact viewer" />
+
+**PPTX viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-pptx.png" alt="Moldy PPTX artifact viewer" />
+
+**HWP/HWPX viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-hwpx.png" alt="Moldy HWPX artifact viewer" />
+
+**Fallback download**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-fallback.png" alt="Moldy fallback artifact download card" />
+
+| 파일/콘텐츠 | 지원 예시 | 뷰어 동작 |
+| --- | --- | --- |
+| 이미지 | `png`, `jpg`, `jpeg`, `webp`, `image/*` | 인라인 preview와 확대 보기 |
+| 오디오/비디오 | `audio/*`, `video/*`, `mp3`, `mp4` | 브라우저 media player로 재생 |
+| PDF | `pdf`, `application/pdf` | PDF embed preview |
+| HTML | `html`, `htm`, `text/html` | sandboxed iframe으로 렌더링 |
+| Markdown | `md`, `markdown`, `text/markdown` | 채팅 Markdown 렌더러로 preview |
+| Mermaid | `mmd`, `mermaid` | Mermaid 다이어그램으로 렌더링 |
+| 코드 | artifact kind `code` | 코드 preview와 source 보기 |
+| 일반 텍스트 | `txt`, `log`, `text/*` | 줄바꿈을 유지한 text preview |
+| 표 데이터 | `csv`, `tsv` | 행/열 table preview |
+| JSON | `json`, `application/json` | 구조화된 JSON preview |
+| YAML/TOML | `yaml`, `yml`, `toml` | 구조화된 key/value tree preview |
+| 한글 문서 | `hwp`, `hwpx` | HWP/HWPX 문서 preview |
+| Word 문서 | `docx` | DOCX 문서 preview |
+| Excel 문서 | `xls`, `xlsx` | sheet/table preview |
+| PowerPoint 문서 | `pptx` | slide preview |
+| 기타/CAD | `cad`, `dwg`, 알 수 없는 MIME type | fallback 카드와 다운로드 |
+
+문서 생성 스킬이나 파일 도구가 DOCX, XLSX, PPTX, HWPX 같은 결과물을 만들면 사용자는 채팅에서 artifact를 열어 내용을 확인하고, Files 라이브러리에서 같은 파일을 다시 찾아 favorite, preview, download할 수 있습니다. preview는 현재 버전 기준으로 열리므로, 파일이 여러 번 갱신된 경우 version number와 update time을 함께 확인하세요.
+
+## 파일 라이브러리 사용
+
+1. **Settings > Files**를 엽니다.
+2. 전체 개수, 전체 용량, 즐겨찾기 수, kind별 breakdown, 최근 7일 개수를 확인합니다.
+3. 검색어, agent, conversation ID, kind, favorite 상태로 필터링합니다.
+4. 파일을 선택해 미리보기를 확인합니다.
+5. 중요한 파일은 favorite으로 표시하거나 현재 버전을 다운로드합니다.
+
+top-level `/artifacts` route도 같은 파일 라이브러리를 기본 앱 layout에서 보여줍니다. 메뉴 기준으로는 설정의 Files가 권장 위치입니다.
+
+## 대화 파일
+
+도구가 파일을 생성하거나 업데이트하면 대화 메시지에 artifact card가 붙을 수 있습니다. 대화 API는 conversation별 artifact endpoint도 제공하므로 UI가 해당 대화에 속한 파일을 목록, preview, download, delete할 수 있습니다.
+
+대화 화면에서는 최신 실행으로 생성된 파일을 바로 확인하기 좋고, Files 라이브러리는 여러 대화와 에이전트에서 나온 파일을 모아 비교하기 좋습니다. 같은 artifact라도 대화에서는 실행 맥락을, 라이브러리에서는 검색/필터/즐겨찾기/통계를 중심으로 봅니다.
+
+파일을 조사할 때는 run ID, tool call ID, source tool name, conversation ID, version number를 함께 확인하세요. 이 값들이 어떤 실행에서 파일이 만들어졌고 사용자가 현재 버전을 보고 있는지 설명합니다.
+
+## 공개 공유
+
+공유 링크는 공유된 대화 메시지와 공유 가능한 artifact를 공개 조회에 포함할 수 있습니다. 공유 링크를 만들거나 전달하기 전에 생성 파일을 검토하세요.
+
+<Warning>
+생성 파일에는 민감한 대화 내용이 들어갈 수 있습니다. 공유 전 메시지, 도구 결과, 파일 preview를 확인하세요.
+</Warning>
+
+## 저장소와 제한
+
+현재 구현은 local artifact storage를 지원합니다. 설정에는 artifact storage backend, storage directory, maximum artifact bytes, maximum files per run, text preview byte limit이 포함됩니다. S3 설정 필드는 존재하지만 현재 storage service는 S3에 대해 unavailable error를 발생시킵니다.
+
+## 실패 시 확인
+
+| 증상 | 확인할 항목 |
+| --- | --- |
+| 파일이 라이브러리에 없음 | 실행이 artifact를 생성했는지, 사용자가 해당 대화 소유자인지 확인 |
+| 미리보기가 비어 있음 | MIME type, text preview 지원 여부, file size, artifact status 확인 |
+| 다운로드 실패 | artifact가 `ready`이고 storage object가 남아 있는지 확인 |
+| 공개 공유에서 파일이 열리지 않음 | share token이 active이고 artifact가 공유된 대화에 속하는지 확인 |
+
+## 관련 API
+
+- `/api/artifacts`, `/api/artifacts/stats`, `/api/artifacts/recent`
+- `/api/artifacts/{artifact_id}/content`, `/api/artifacts/{artifact_id}/download`
+- `/api/conversations/{conversation_id}/artifacts`
+- `/api/shares/{share_token}/artifacts`
