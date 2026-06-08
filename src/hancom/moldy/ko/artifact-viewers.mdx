@@ -1,137 +1,125 @@
 ---
 title: 아티팩트 뷰어 매트릭스
-description: Moldy 생성 파일의 kind, 확장자, MIME type별 preview, download, 공유 동작을 정리합니다.
+description: Moldy 생성 파일의 kind, 확장자, MIME type별 preview provider와 fallback 동작을 빠르게 비교합니다.
 ---
 
-Moldy artifact viewer는 파일의 `kind`, extension, MIME type을 조합해 preview provider를 선택합니다. 이 문서는 대화 artifact card, 오른쪽 artifact panel, **Settings > Files**, 공개 공유 화면에서 어떤 파일을 어떻게 볼 수 있는지 정리합니다.
+Moldy artifact viewer는 파일의 `kind`, extension, MIME type, status를 조합해 preview provider를 선택합니다. 이 페이지는 **어떤 파일이 어떤 뷰어로 열리는지**를 확인하는 레퍼런스입니다.
 
-기본 사용법은 [파일과 아티팩트](/hancom/moldy/ko/files-artifacts)를 참고하세요. 이 페이지는 파일 형식별 판정과 운영 체크에 집중합니다.
+파일 라이브러리 사용법, 즐겨찾기, 다운로드, 공유 흐름은 [파일과 아티팩트](/hancom/moldy/ko/files-artifacts)를 참고하세요.
 
-아래 갤러리는 Moldy artifact preview provider를 실제로 렌더링해 캡처한 화면입니다. 형식별로 어떤 preview가 열리는지 확인할 때 이 이미지를 기준으로 보면 됩니다.
+## 전체 매트릭스
 
-## 실제 뷰어 캡처 갤러리
-
-### 미디어와 HTML
-
-**이미지 viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-image.png" alt="Moldy 이미지 artifact viewer" />
-
-**Audio viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-audio.png" alt="Moldy audio artifact viewer" />
-
-**Video viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-video.png" alt="Moldy video artifact viewer" />
-
-**PDF viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-pdf.png" alt="Moldy PDF artifact viewer" />
-
-**HTML viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-html.png" alt="Moldy HTML artifact viewer" />
-
-### 문서와 데이터
-
-**Markdown viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-markdown.png" alt="Moldy Markdown artifact viewer" />
-
-**Mermaid viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-mermaid.png" alt="Moldy Mermaid artifact viewer" />
-
-**CSV/TSV table viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-csv.png" alt="Moldy CSV artifact viewer" />
-
-**JSON viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-json.png" alt="Moldy JSON artifact viewer" />
-
-**YAML/TOML viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-yaml.png" alt="Moldy YAML artifact viewer" />
-
-**Code viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-code.png" alt="Moldy code artifact viewer" />
-
-**Text/log viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-text.png" alt="Moldy text artifact viewer" />
-
-### 오피스 문서와 fallback
-
-**DOCX viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-docx.png" alt="Moldy DOCX artifact viewer" />
-
-**XLS/XLSX viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-xlsx.png" alt="Moldy XLSX artifact viewer" />
-
-**PPTX viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-pptx.png" alt="Moldy PPTX artifact viewer" />
-
-**HWP/HWPX viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-hwpx.png" alt="Moldy HWPX artifact viewer" />
-
-**Fallback download**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/ko/artifact-viewer-fallback.png" alt="Moldy fallback artifact download card" />
+| 파일/콘텐츠 | 판정 신호 | 선택되는 뷰어 | 주요 확인 | fallback/주의 |
+| --- | --- | --- | --- | --- |
+| 이미지 | `image/*`, `png`, `jpg`, `jpeg`, `webp` | 이미지 preview | 확대, 시각 정보, 다운로드 | 공유 전 이미지 안의 개인정보 확인 |
+| 오디오 | `audio/*`, `mp3`, `wav` | 브라우저 audio player | 재생 가능 여부, 길이 | 브라우저 codec 지원 필요 |
+| 비디오 | `video/*`, `mp4`, `webm` | 브라우저 video player | 재생, poster, 크기 | 큰 파일은 download가 더 안정적 |
+| PDF | `application/pdf`, `pdf` | PDF embed | page, 문서 내용 | 브라우저 PDF 정책에 영향 |
+| HTML | `text/html`, `html`, `htm` | sandboxed iframe | 렌더링 결과, 링크 | 외부 링크와 embedded media 확인 |
+| Markdown | `text/markdown`, `md`, `markdown` | Markdown renderer | heading, table, link | raw text fallback |
+| Mermaid | `mmd`, `mermaid` | Mermaid renderer | flowchart, sequence | 문법 오류 시 코드로 확인 |
+| CSV/TSV | `csv`, `tsv`, text table | table preview | delimiter, header, row count | 너무 큰 파일은 일부만 확인 |
+| JSON | `application/json`, `json` | structured JSON preview | key, array/object 깊이 | 민감 field 확인 |
+| YAML/TOML | `yaml`, `yml`, `toml` | key/value preview | 설정값, placeholder | secret-like 값 확인 |
+| Code | artifact kind `code` | code preview | language, path, overwrite 위험 | 실행 전 별도 검증 |
+| TXT/LOG | `text/*`, `txt`, `log` | text preview | error line, stack trace | 내부 경로/토큰 확인 |
+| DOCX | `docx` | document preview | 본문, 표, 제목 | download fallback |
+| XLS/XLSX | `xls`, `xlsx` | sheet/table preview | sheet, row, column | 수식/숨김 sheet 확인 |
+| PPTX | `pptx` | slide preview | slide 순서, 본문 | download fallback |
+| HWP/HWPX | `hwp`, `hwpx` | 한글 문서 preview | 문단, 표, 본문 구조 | download fallback |
+| 기타/CAD | `cad`, `dwg`, 알 수 없는 MIME | fallback card | 파일명, 크기, download | preview provider 추가 여부 검토 |
 
 ## 선택 기준
 
 | 기준 | 사용 방식 |
 | --- | --- |
 | `kind` | `image`, `video`, `audio`, `pdf`, `markdown`, `html`, `code`, `document`, `data`, `cad`, `other` 같은 상위 분류 |
-| extension | `pdf`, `docx`, `xlsx`, `pptx`, `hwp`, `hwpx`, `csv`, `json`, `md` 등 실제 파일명 기반 판단 |
+| Extension | 실제 파일명 기반 판정. MIME type이 불완전할 때 provider 선택에 중요 |
 | MIME type | `image/*`, `text/html`, `application/pdf`, `application/json` 같은 content type |
-| status | `ready`일 때 preview/download 가능 |
-| size limit | text preview byte limit, maximum artifact bytes, maximum files per run의 영향을 받음 |
+| Status | `ready`일 때 preview/download 가능. `writing`, `failed`, `deleted`는 별도 상태로 처리 |
+| Size limit | text preview byte limit, maximum artifact bytes, maximum files per run의 영향을 받음 |
 
-## 미디어 뷰어
+## 실제 뷰어 캡처
 
-| 파일 | preview | 주요 행동 | 주의 |
-| --- | --- | --- | --- |
-| PNG/JPG/JPEG/WebP | 이미지 preview와 확대 | 확대, 다운로드, 공유 전 확인 | 이미지 안의 개인정보와 내부 URL 확인 |
-| MP3/WAV 등 audio | 브라우저 audio player | 재생, 다운로드 | 브라우저가 codec을 지원해야 함 |
-| MP4/WebM 등 video | 브라우저 video player | 재생, 다운로드 | 큰 파일은 preview보다 download가 안정적일 수 있음 |
-| PDF | embed preview | page 확인, 다운로드 | 브라우저 PDF viewer 정책에 영향 |
+각 이미지는 실제 Moldy artifact preview provider를 렌더링해 캡처한 화면입니다. 문서 안에서는 작게 표시되지만 클릭하면 크게 볼 수 있습니다.
 
-## 문서 뷰어
+<AccordionGroup>
+  <Accordion title="미디어와 HTML">
+    **이미지 viewer**
 
-| 파일 | preview | 주요 행동 | fallback |
-| --- | --- | --- | --- |
-| Markdown | Markdown renderer | heading, table, link 확인 | raw text |
-| Mermaid | diagram renderer | flowchart/sequence 확인 | 코드 블록 |
-| HTML | sandboxed iframe | 렌더링 확인 | 다운로드 |
-| DOCX | document preview | 본문, 표, 제목 확인 | 다운로드 |
-| XLS/XLSX | sheet/table preview | sheet, row, column 확인 | 다운로드 |
-| PPTX | slide preview | slide 흐름 확인 | 다운로드 |
-| HWP/HWPX | 한글 문서 preview | 본문 구조 확인 | 다운로드 |
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-image.webp" alt="Moldy 이미지 artifact viewer" />
 
-<Warning>
-HTML preview는 sandboxed iframe으로 열립니다. 그래도 외부 링크, embedded media, 민감한 본문이 포함될 수 있으므로 공유 전 내용을 확인하세요.
-</Warning>
+    **Audio viewer**
 
-## 데이터와 코드 뷰어
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-audio.webp" alt="Moldy audio artifact viewer" />
 
-| 파일 | preview | 확인할 것 |
-| --- | --- | --- |
-| CSV/TSV | table preview | delimiter, header, row count |
-| JSON | 구조화 preview | key 이름, array/object 깊이, 민감 field |
-| YAML/TOML | key/value tree | 설정값, secret placeholder 여부 |
-| TXT/LOG | text preview | error line, stack trace, 내부 경로 |
-| code artifact | code preview | language, generated path, overwrite 위험 |
-| CAD/기타 | fallback card | download 가능 여부 |
+    **Video viewer**
 
-## 대화, 라이브러리, 공유의 차이
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-video.webp" alt="Moldy video artifact viewer" />
+
+    **PDF viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-pdf.webp" alt="Moldy PDF artifact viewer" />
+
+    **HTML viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-html.webp" alt="Moldy HTML artifact viewer" />
+  </Accordion>
+
+  <Accordion title="문서와 데이터">
+    **Markdown viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-markdown.webp" alt="Moldy Markdown artifact viewer" />
+
+    **Mermaid viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-mermaid.webp" alt="Moldy Mermaid artifact viewer" />
+
+    **CSV/TSV table viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-csv.webp" alt="Moldy CSV artifact viewer" />
+
+    **JSON viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-json.webp" alt="Moldy JSON artifact viewer" />
+
+    **YAML/TOML viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-yaml.webp" alt="Moldy YAML artifact viewer" />
+
+    **Code viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-code.webp" alt="Moldy code artifact viewer" />
+
+    **Text/log viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-text.webp" alt="Moldy text artifact viewer" />
+  </Accordion>
+
+  <Accordion title="오피스 문서와 fallback">
+    **DOCX viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-docx.webp" alt="Moldy DOCX artifact viewer" />
+
+    **XLS/XLSX viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-xlsx.webp" alt="Moldy XLSX artifact viewer" />
+
+    **PPTX viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-pptx.webp" alt="Moldy PPTX artifact viewer" />
+
+    **HWP/HWPX viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-hwpx.webp" alt="Moldy HWPX artifact viewer" />
+
+    **Fallback download**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/ko/artifact-viewer-fallback.webp" alt="Moldy fallback artifact download card" />
+  </Accordion>
+</AccordionGroup>
+
+## 위치별 차이
 
 | 위치 | 가장 잘 보는 것 |
 | --- | --- |
@@ -149,6 +137,10 @@ HTML preview는 sandboxed iframe으로 열립니다. 그래도 외부 링크, em
 | 공유 화면에서 안 열림 | active share token, artifact가 공유 대화에 속하는지 |
 | 문서가 fallback만 보임 | 해당 extension/MIME provider 지원 여부 |
 | 오래된 파일이 보임 | version number와 update time |
+
+<Warning>
+HTML preview는 sandboxed iframe으로 열립니다. 그래도 외부 링크, embedded media, 민감한 본문이 포함될 수 있으므로 공유 전 내용을 확인하세요.
+</Warning>
 
 ## 운영 체크리스트
 
