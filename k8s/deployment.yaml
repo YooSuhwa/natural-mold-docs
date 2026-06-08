@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: docs-mold
-          image: orca-harbor.cloud.hancom.com/protech/docs-mold:20260608-115025
+          image: orca-harbor.cloud.hancom.com/protech/docs-mold:20260608-134254
           imagePullPolicy: Always
           env:
             - name: PORT
