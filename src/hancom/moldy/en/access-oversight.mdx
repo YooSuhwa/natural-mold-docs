@@ -1,0 +1,64 @@
+---
+title: Access and oversight
+description: Understand Moldy user ownership, operator permissions, credential audit logs, share links, and public read limits.
+---
+
+Moldy's access model is user ownership plus operator oversight. Most resources are scoped to the authenticated user, operator features are protected by `super_user`, and public access is limited to read-only conversation share links.
+
+Use this page as the access-control source of truth for Moldy documentation. The current Moldy source does not implement granular organization or workspace role policies, so this page only documents permissions that are visible in the frontend routes, backend dependencies, and API surface.
+
+For operational guidance on credentials, memory, generated files, share links, and Agent API keys, see [Security and privacy](/hancom/moldy/en/security-privacy).
+
+## Permission model
+
+| Scope | Description |
+| --- | --- |
+| Authenticated user | Manages their own agents, conversations, credentials, MCP servers, skills, memory, files, schedules, usage, and Agent API keys |
+| Operator `super_user` | Manages system credentials, System LLM, model catalog mutations, marketplace listing, and all-user activity review |
+| Public visitor | Reads only shared conversation snapshots and shared artifacts by share token |
+
+The practical rule is that normal application work stays user-owned, while shared platform configuration stays operator-owned. When troubleshooting access, check the current user, the resource owner, and whether the route requires `super_user` before assuming that the resource is missing.
+
+## User-owned resources
+
+Agents, conversations, user credentials, MCP servers, memory records, generated files, schedules, deployments, and API keys are queried by current user ID. Missing resources and resources owned by other users use the same not-found style responses so existence is not leaked.
+
+## Operator-only features
+
+The following features are guarded by `require_super_user`:
+
+- List, create, update, and delete system credentials
+- Read and update System LLM role slots
+- Create, update, and delete model catalog rows, and include hidden models
+- Change marketplace public item listed state
+- Inspect k-skill sync status
+- Inspect all-user activity events
+
+## Credential protection and audit
+
+Credential responses never return decrypted secret values. User credentials are user-scoped, while system credentials are operator-scoped. Credential update and delete flows write audit logs, and the credential detail UI can show recent audit log entries.
+
+Credential audit information is useful for support because it records administrative changes without exposing the secret itself. Public documentation and screenshots should show credential names, definitions, and status only, never raw secret fields.
+
+## Share links
+
+A share link is a read-only public snapshot created by the conversation owner. Shared messages can also expose share-readable file artifacts.
+
+| Flow | Behavior |
+| --- | --- |
+| Get share | Check whether a conversation has an active share token |
+| Create share | Return the existing active token when one already exists |
+| Revoke share | Revoke the active token and invalidate cache |
+| Public read | Resolve a share token to a snapshot, messages envelope, or shared artifact without auth |
+
+Public reads return 404 for revoked or unknown tokens. Public endpoints use IP-based rate limits and a short cache.
+
+<Warning>
+Share links can be viewed without login. Review messages, files, and tool results before sharing.
+</Warning>
+
+## Observability
+
+Conversation runs leave messages, tool results, generated files, usage, and trace/debug data. Agent trace pages and debug APIs help inspect execution steps. Scheduled runs record status, error message, output preview, and trace id.
+
+Agent API calls are attributed to API key actors. When investigating an external run, review the deployment public ID, API key prefix/last four, scopes, run ID, and audit outcome.

@@ -1,0 +1,70 @@
+# Moldy Documentation
+
+> Product documentation for Moldy, a self-hostable AI agent builder for creating, configuring, chatting with, scheduling, and operating AI agents.
+
+## Key Facts
+
+- Product: Moldy
+- Category: AI agent builder and operations application
+- Documentation languages: Korean and English
+- Main capabilities: agents, chat, tools, MCP servers, skills, memory, generated artifacts, schedules, marketplace, Agent API, usage, and admin settings
+- Documentation source model: Moldy frontend routes, backend OpenAPI, source files, screenshots, and browser-verified pages
+- Source repository: https://github.com/YooSuhwa/natural-mold
+
+## Korean Documentation
+
+- [Moldy 소개](/hancom/moldy/ko): Product overview, menu model, source basis, and next steps.
+- [빠른 시작](/hancom/moldy/ko/quickstart): First-run setup, agent creation, chat, tool setup, and verification.
+- [핵심 개념](/hancom/moldy/ko/concepts): Agent, model, credential, tool, MCP, skill, memory, schedule, marketplace, and file concepts.
+- [에이전트 만들기](/hancom/moldy/ko/create-first-agent): New Agent workflow from template or manual setup.
+- [사용 시나리오와 레시피](/hancom/moldy/ko/recipes): Goal-based workflows for document analysis agents, scheduled reports, MCP tools, generated files, and Agent API integrations.
+- [에이전트 설정](/hancom/moldy/ko/agent-settings): Instructions, model behavior, tools, memory, permissions, and runtime setup.
+- [에이전트와 채팅](/hancom/moldy/ko/chat-with-agent): Streaming chat, inline components, tool results, approvals, memory cards, sub-agents, Builder cards, and generated artifacts.
+- [채팅 컴포넌트 갤러리](/hancom/moldy/ko/chat-components): Reference for inline chat components, approval cards, memory cards, tool cards, and artifact cards.
+- [파일과 아티팩트](/hancom/moldy/ko/files-artifacts): File library, conversation artifacts, public shares, artifact metadata, and viewer support for documents and generated files.
+- [아티팩트 뷰어 매트릭스](/hancom/moldy/ko/artifact-viewers): File type matrix for preview, download, fallback, and sharing behavior.
+- [Tools, MCP, Skills](/hancom/moldy/ko/tools-mcp): Comparison of capability resources and how they appear in chat.
+- [MCP 서버](/hancom/moldy/ko/mcp-servers): MCP server setup, probe/import/export, credentials, and troubleshooting.
+- [스킬](/hancom/moldy/ko/skills): Skill creation, attachment, publishing, versioning, and marketplace use.
+- [메모리](/hancom/moldy/ko/memory): Memory page behavior, records, search, settings, and privacy checks.
+- [스케줄](/hancom/moldy/ko/schedules): Scheduled agent runs, triggers, run history, and failure checks.
+- [Agent API](/hancom/moldy/ko/agent-api): Agent API keys, runtime access, external chat, and safety notes.
+- [API Reference](/hancom/moldy/ko/api-reference): OpenAPI-based API guide and endpoint index.
+- [API Cookbook](/hancom/moldy/ko/api-cookbook): Curl examples for login, CSRF, conversations, streaming, artifacts, shares, and Agent API.
+- [보안과 프라이버시](/hancom/moldy/ko/security-privacy): Safe handling of credentials, memory, generated files, share links, Agent API keys, and screenshots.
+- [오류 메시지 사전](/hancom/moldy/ko/error-reference): Status-code and component-state triage for auth, model, tool, MCP, schedule, artifact, and API failures.
+- [릴리즈와 문서 업데이트](/hancom/moldy/ko/release-docs-updates): Process for keeping docs updated after feature, menu, API, screenshot, and GEO changes.
+- [FAQ](/hancom/moldy/ko/faq): Frequently asked questions across setup, menus, chat, files, sharing, API, and troubleshooting.
+- [문제 해결](/hancom/moldy/ko/troubleshooting): Common setup, auth, model, tool, MCP, schedule, and docs issues.
+
+## English Documentation
+
+- [Moldy overview](/hancom/moldy/en): Product overview, menu model, source basis, and next steps.
+- [Quickstart](/hancom/moldy/en/quickstart): First-run setup, agent creation, chat, tool setup, and verification.
+- [Core concepts](/hancom/moldy/en/concepts): Agent, model, credential, tool, MCP, skill, memory, schedule, marketplace, and file concepts.
+- [Create your first agent](/hancom/moldy/en/create-first-agent): New Agent workflow from template or manual setup.
+- [Scenarios and recipes](/hancom/moldy/en/recipes): Goal-based workflows for document analysis agents, scheduled reports, MCP tools, generated files, and Agent API integrations.
+- [Agent settings](/hancom/moldy/en/agent-settings): Instructions, model behavior, tools, memory, permissions, and runtime setup.
+- [Chat with an agent](/hancom/moldy/en/chat-with-agent): Streaming chat, inline components, tool results, approvals, memory cards, sub-agents, Builder cards, and generated artifacts.
+- [Chat component gallery](/hancom/moldy/en/chat-components): Reference for inline chat components, approval cards, memory cards, tool cards, and artifact cards.
+- [Files and artifacts](/hancom/moldy/en/files-artifacts): File library, conversation artifacts, public shares, artifact metadata, and viewer support for documents and generated files.
+- [Artifact viewer matrix](/hancom/moldy/en/artifact-viewers): File type matrix for preview, download, fallback, and sharing behavior.
+- [Tools, MCP, and Skills](/hancom/moldy/en/tools-mcp): Comparison of capability resources and how they appear in chat.
+- [MCP servers](/hancom/moldy/en/mcp-servers): MCP server setup, probe/import/export, credentials, and troubleshooting.
+- [Skills](/hancom/moldy/en/skills): Skill creation, attachment, publishing, versioning, and marketplace use.
+- [Memory](/hancom/moldy/en/memory): Memory page behavior, records, search, settings, and privacy checks.
+- [Schedules](/hancom/moldy/en/schedules): Scheduled agent runs, triggers, run history, and failure checks.
+- [Agent API](/hancom/moldy/en/agent-api): Agent API keys, runtime access, external chat, and safety notes.
+- [API Reference](/hancom/moldy/en/api-reference): OpenAPI-based API guide and endpoint index.
+- [API Cookbook](/hancom/moldy/en/api-cookbook): Curl examples for login, CSRF, conversations, streaming, artifacts, shares, and Agent API.
+- [Security and privacy](/hancom/moldy/en/security-privacy): Safe handling of credentials, memory, generated files, share links, Agent API keys, and screenshots.
+- [Error reference](/hancom/moldy/en/error-reference): Status-code and component-state triage for auth, model, tool, MCP, schedule, artifact, and API failures.
+- [Releases and documentation updates](/hancom/moldy/en/release-docs-updates): Process for keeping docs updated after feature, menu, API, screenshot, and GEO changes.
+- [FAQ](/hancom/moldy/en/faq): Frequently asked questions across setup, menus, chat, files, sharing, API, and troubleshooting.
+- [Troubleshooting](/hancom/moldy/en/troubleshooting): Common setup, auth, model, tool, MCP, schedule, and docs issues.
+
+## Reference Assets
+
+- [OpenAPI endpoint index](/hancom/moldy/en/api-endpoints): Generated endpoint list from the current Moldy OpenAPI snapshot.
+- [Documentation workflow](/hancom/moldy/en/documentation-workflow): How to refresh docs after product, API, menu, screenshot, or GEO/SEO changes.
+- [Changelog](/hancom/moldy/en/changelog): Documentation change history.

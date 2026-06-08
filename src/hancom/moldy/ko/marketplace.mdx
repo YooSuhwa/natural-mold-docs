@@ -1,0 +1,58 @@
+---
+title: 마켓플레이스 둘러보기
+description: Moldy 마켓플레이스에서 스킬, 에이전트, MCP 리소스를 찾고 상태를 읽는 방법입니다.
+---
+
+마켓플레이스는 공유된 에이전트, MCP 리소스, 스킬을 찾기 위한 Moldy catalog입니다. 사용자는 리소스를 검색하고, 버전과 자격증명 요구사항을 확인하고, 항목을 설치하며, 설치된 항목이 설정 필요 상태인지 또는 업데이트 가능한지 볼 수 있습니다.
+
+현재 구현은 `agent`, `mcp`, `skill` 리소스 유형을 catalog에서 다룹니다. 이 문서는 Moldy 소스에서 확인된 catalog와 운영자 관리 동작만 설명합니다.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/marketplace.png" alt="Moldy 마켓플레이스 목록 화면" />
+
+## 리소스 찾기
+
+마켓플레이스 목록 API는 다음 필터를 지원합니다.
+
+| 필터 | 설명 |
+| --- | --- |
+| resource type | `agent`, `mcp`, `skill` |
+| 검색어 | 이름과 설명 검색 |
+| visibility | private, restricted, public, unlisted, system |
+| category | 카테고리 |
+| installed | 설치 여부 |
+| install state | active, needs_setup, disabled, uninstalled |
+| support level | 실행 지원 수준 |
+| source kind | created/imported/k-skill 등 출처 |
+| listed | 운영자 listing 상태 |
+
+## 카드에서 읽을 정보
+
+리소스 카드에는 다음 요약이 표시될 수 있습니다.
+
+- 이름, 설명, 아이콘
+- Resource type
+- Origin summary
+- Publication summary
+- Credential summary
+- Installation status
+- Update available
+- Execution profile
+- 최신 버전 정보
+
+## 항목 상세
+
+상세 화면에서는 최신 버전, release notes, credential requirements, 설치 상태, 게시 상태를 더 자세히 확인합니다. 설치와 업데이트 흐름은 [마켓플레이스 설치와 게시](/hancom/moldy/ko/marketplace-install-publish)에서 다룹니다.
+
+항목 상세에서 특히 중요한 정보는 credential requirements입니다. 현재 사용자가 필수 자격증명을 바인딩하기 전까지 설치는 `needs_setup` 상태로 남을 수 있으므로, 설치된 리소스를 실행하기 전에 상세 화면을 설정 요구사항의 기준으로 사용하세요.
+
+## 운영자 관리
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/marketplace-moderation.png" alt="Moldy 마켓플레이스 운영자 관리 화면" />
+
+운영자 계정은 마켓플레이스 운영자 관리 메뉴에서 public item의 listing 상태와 k-skill sync 상태를 확인합니다. listing 관리는 `super_user` 전용이며, 부적절한 public 항목을 catalog에서 내리거나 승인할 때 사용합니다.
+
+마켓플레이스 운영자 관리는 catalog 노출을 바꾸는 기능이지 스킬, 에이전트, MCP 구현 자체를 바꾸는 기능은 아닙니다. public 항목이 catalog에 보이지 않는다면 visibility와 listing 상태를 함께 확인하세요.
+
+<Note>
+현재 소스에서 확인되는 마켓플레이스 리소스 유형은 agent, mcp, skill입니다. 확인되지 않은 외부 채널 catalog는 이 문서에 포함하지 않습니다.
+</Note>

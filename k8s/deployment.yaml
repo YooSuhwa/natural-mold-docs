@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docs-mold
+  namespace: protech
+  labels:
+    app: docs-mold
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docs-mold
+  template:
+    metadata:
+      labels:
+        app: docs-mold
+    spec:
+      containers:
+        - name: docs-mold
+          image: orca-harbor.cloud.hancom.com/protech/docs-mold:20260608-115025
+          imagePullPolicy: Always
+          env:
+            - name: PORT
+              value: "3001"
+          ports:
+            - name: http
+              containerPort: 3001
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20

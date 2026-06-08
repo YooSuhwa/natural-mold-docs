@@ -1,0 +1,130 @@
+---
+title: Documentation workflow
+description: Refresh the Moldy docs, API reference, and screenshots when the product changes.
+---
+
+Moldy documentation is maintained from the current code, the running OpenAPI schema, and real UI captures. When frontend routes, APIs, permissions, or UI copy change, update the documentation artifacts in the same change flow.
+
+This workflow keeps the English and Korean docs aligned with the product while making each page easier for users and AI systems to cite. Every factual product claim should be traceable to a route, API schema, source file, screenshot, or browser-verified screen.
+
+## Refresh order
+
+1. Run the Moldy app and API.
+2. Refresh the OpenAPI snapshot.
+3. Regenerate the feature inventory.
+4. Rerun Playwright screenshots.
+5. Update Korean and English docs together.
+6. Validate sensitive data, image references, and links.
+7. Open the docs server and check key pages.
+
+```bash
+pnpm run openapi
+pnpm run inventory
+pnpm run capture
+pnpm run check:sensitive
+pnpm run docs:check
+```
+
+## What to check
+
+| Change type | Check |
+| --- | --- |
+| New screen or route | Documentation and capture flags in `planning/feature-inventory.md` |
+| New API | API Reference tab and `src/openapi/moldy-openapi.json` |
+| Permission change | User/operator access conditions and troubleshooting docs |
+| UI copy change | Korean/English screenshots and prose |
+| Sensitive screen | Capture masking rules and `check:sensitive` output |
+
+## Verify from source
+
+External product docs are only information-architecture references. Before adding a feature to Moldy docs, confirm that it exists in Moldy itself.
+
+| Evidence | Example |
+| --- | --- |
+| Frontend routes | `natural-mold/frontend/src/app/**/page.tsx` |
+| Backend API | `natural-mold/backend/app/routers/*.py` |
+| API schema | `src/openapi/moldy-openapi.json` |
+| Tests | `natural-mold/frontend/tests/pages/*.test.tsx` |
+| Live screens | `src/images/hancom/moldy/{ko,en}` |
+
+Marketplace install/publish, MCP probe/import/export, share links, schedules, and chat streaming in this documentation are based only on confirmed Moldy routes and APIs.
+
+## GEO and AI visibility checks
+
+After broad feature additions, menu changes, API changes, or documentation-structure changes, run a GEO/SEO pass as part of the docs refresh. The goal is to make each page easy for search engines and AI answer engines to discover, quote, and route back to the correct Moldy workflow.
+
+| Check | Standard |
+| --- | --- |
+| Answer-first structure | The first paragraph should state the page purpose, covered feature, and user outcome directly. |
+| Citable sections | Break feature behavior, steps, states, limits, and troubleshooting into short headings, tables, and ordered steps. |
+| `llms.txt` | Update `src/llms.txt` when important menu pages, inline chat components, file/artifact viewers, APIs, or operations docs change. |
+| `robots.txt` | Keep docs crawling allowed unless deployment policy requires restrictions, and point crawlers toward `/llms.txt`. |
+| `sitemap.xml` | Generate it only after the production docs domain is known, using absolute canonical URLs. Do not publish temporary URLs or placeholders. |
+| JSON-LD | Inject it as build-time metadata when production URL, frontmatter, navigation path, language, and modified date are available. |
+| Change record | Save GEO findings and remaining production tasks in a `planning/` report and the changelog. |
+
+## Structured data recommendation
+
+The documentation site should publish structured data as implementation-level metadata, not as raw per-page `<script>` examples inside MDX content. If the docs framework supports JSON-LD injection at build time, generate it from final page frontmatter, production URLs, navigation paths, and screenshot assets.
+
+| Page type | Recommended Schema.org type | Source values |
+| --- | --- | --- |
+| Documentation home | `WebSite` and `SoftwareApplication` | Public docs URL, Moldy product name, final description, search URL if supported |
+| Technical guide | `TechArticle` | MDX `title`, MDX `description`, canonical page URL, language, modified date |
+| Troubleshooting or FAQ-style page | `FAQPage` when questions and answers are explicit | Final question headings and answer text |
+| Navigation path | `BreadcrumbList` | `src/docs.json` navigation path and canonical page URL |
+
+Use the following JSON-LD as a reference template only. Replace placeholder strings with final production values during site generation.
+
+```json
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "PUBLIC_DOCS_BASE_URL/#software",
+      "name": "Moldy",
+      "applicationCategory": "BusinessApplication",
+      "description": "Moldy is a web application for building and operating AI agents through chat, templates, manual configuration, tools, MCP servers, skills, schedules, and marketplace resources.",
+      "url": "PUBLIC_DOCS_BASE_URL/hancom/moldy/en"
+    },
+    {
+      "@type": "WebSite",
+      "@id": "PUBLIC_DOCS_BASE_URL/#website",
+      "name": "Moldy documentation",
+      "url": "PUBLIC_DOCS_BASE_URL",
+      "about": {
+        "@id": "PUBLIC_DOCS_BASE_URL/#software"
+      },
+      "inLanguage": ["en", "ko"]
+    },
+    {
+      "@type": "TechArticle",
+      "@id": "PAGE_URL#article",
+      "headline": "PAGE_TITLE",
+      "description": "PAGE_DESCRIPTION",
+      "url": "PAGE_URL",
+      "inLanguage": "en",
+      "about": {
+        "@id": "PUBLIC_DOCS_BASE_URL/#software"
+      },
+      "isPartOf": {
+        "@id": "PUBLIC_DOCS_BASE_URL/#website"
+      },
+      "dateModified": "YYYY-MM-DD"
+    }
+  ]
+}
+```
+
+Do not publish placeholder values. Validate generated JSON-LD after deployment and update the template when the navigation model, canonical URL strategy, or page metadata changes.
+
+## Local docs server
+
+Run the docs site separately from the Moldy app.
+
+```bash
+pnpm run docs:dev
+```
+
+The default review URL is `http://localhost:3001`.

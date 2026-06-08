@@ -1,0 +1,142 @@
+---
+title: 빠른 시작
+description: Moldy에 로그인하고, 운영자 설정을 확인하고, 첫 에이전트를 만들어 채팅과 사용량까지 검증하는 절차입니다.
+---
+
+이 빠른 시작은 새 Moldy 사용자가 로그인부터 검증된 에이전트 실행까지 진행하도록 안내합니다. 완료 시점에는 인증된 세션, 설정되거나 선택된 모델, 저장된 에이전트, 성공한 채팅 응답, 해당 실행의 사용량 데이터가 있어야 합니다.
+
+이 가이드는 Moldy 앱이 `http://localhost:3000`, API가 `http://localhost:8001`에서 실행 중인 상태를 기준으로 합니다. 처음 사용하는 사용자는 운영자가 제공한 계정으로 시작하고, 새 환경을 준비하는 운영자는 시스템 자격증명과 System LLM부터 확인하세요.
+
+<Callout icon="rocket" color="#047857" iconType="regular">
+목표는 첫 에이전트를 만들고, 테스트 채팅을 실행하고, 사용량 기록까지 확인하는 것입니다.
+</Callout>
+
+## 시작 전 확인
+
+| 필요한 것 | 확인 위치 |
+| --- | --- |
+| Moldy 계정 | `/login` 또는 `/register` |
+| 모델 호출용 자격증명 | **Settings > Credentials** 또는 운영자용 **System Credentials** |
+| 사용할 모델 | **Settings > Models** |
+| 운영자 초기 설정 | **Settings > System Credentials**, **System LLM 설정** |
+| 도구 실행이 필요한 경우 | **도구**, **MCP 서버**, **스킬** |
+| 선택 기능 | **Settings > Memory**, **Settings > Files** |
+
+## 1. 로그인
+
+운영자가 제공한 계정으로 로그인합니다. Moldy는 HttpOnly 쿠키와 CSRF 토큰을 사용하므로, 로그인 뒤에는 브라우저 세션에서 API 요청이 자동 인증됩니다.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/login.png" alt="Moldy 로그인 화면" />
+
+로그인 후 대시보드가 열리면 계정과 API 연결은 정상입니다. 다시 로그인 화면으로 돌아간다면 [문제 해결](/hancom/moldy/ko/troubleshooting#로그인-후-다시-로그인-화면으로-이동합니다)을 먼저 확인하세요.
+
+## 2. 운영자 설정 확인
+
+처음 운영하는 환경이라면 운영자 계정으로 다음을 확인합니다.
+
+<Steps>
+  <Step title="시스템 자격증명 확인">
+    **시스템 자격증명**에서 LLM 제공자용 자격증명을 등록합니다. 시스템 자격증명은 사용자 선택 목록에 노출되지 않는 운영자 범위의 비밀값입니다.
+  </Step>
+  <Step title="System LLM role slot 확인">
+    **System LLM 설정**에서 텍스트 기본, 텍스트 fallback, 이미지 슬롯을 설정합니다. Builder, Assistant, 이미지 생성은 이 설정에 의존합니다.
+  </Step>
+  <Step title="모델 상태 확인">
+    **모델** 화면에서 사용할 모델이 표시되고, 필요한 경우 모델 테스트를 실행합니다.
+  </Step>
+</Steps>
+
+일반 사용자라면 운영자 설정을 직접 바꿀 수 없습니다. 대신 에이전트에서 사용할 사용자 자격증명을 준비하세요.
+
+## 3. 생성 방식 선택
+
+대시보드에서 **새 에이전트**를 선택합니다.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/agent-create.png" alt="Moldy 새 에이전트 생성 시작 화면" />
+
+| 방식 | 사용하면 좋은 경우 |
+| --- | --- |
+| 대화로 만들기 | 만들고 싶은 에이전트를 자연어로 설명하고 Moldy가 구성을 제안하게 할 때 |
+| 직접 만들기 | 지침, 모델, 도구, 스킬, 미들웨어를 직접 지정할 때 |
+| 템플릿으로 만들기 | 준비된 업무 패턴에서 빠르게 시작할 때 |
+
+처음이라면 **대화로 만들기**가 가장 쉽습니다. 운영자나 파워 유저는 **직접 만들기**로 모델, fallback, 도구, 스케줄까지 바로 정리할 수 있습니다.
+
+## 4. 에이전트 만들기
+
+대화형 빌더를 사용할 때는 목표, 입력, 결과 형식, 필요한 외부 서비스, 실행 주기를 한 번에 설명하세요.
+
+```txt
+매일 오전 9시에 주요 키워드 뉴스를 요약하고, 결과를 표 형식으로 정리해줘.
+검색 도구가 필요하면 사용하고, 출처 링크를 함께 남겨줘.
+```
+
+직접 만들기를 사용할 때는 최소한 다음 값을 채웁니다.
+
+- 이름과 설명
+- 시스템 지침
+- 기본 모델
+- 필요한 도구, MCP 도구, 스킬
+- 필요한 경우 서브에이전트, 미들웨어, 오프너, 스케줄
+
+## 5. 테스트 채팅 실행
+
+에이전트가 만들어지면 에이전트 화면에서 작은 요청을 먼저 보냅니다.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/agent-chat.png" alt="Moldy 에이전트 채팅 화면" />
+
+확인할 항목은 다음과 같습니다.
+
+- 에이전트가 지침에 맞는 말투와 형식으로 답하는지
+- 필요한 도구 호출이 실제로 발생하는지
+- 도구 결과가 대화 흐름 안에 표시되는지
+- 토큰/비용 정보가 메시지 또는 사용량 화면에 반영되는지
+- 승인이나 resume이 필요한 실행이 중단 없이 이어지는지
+
+## 6. 설정을 조정하고 저장
+
+응답이 기대와 다르면 [에이전트 설정 관리](/hancom/moldy/ko/agent-settings)에서 조정합니다.
+
+| 문제 | 조정할 위치 |
+| --- | --- |
+| 답변 형식이 맞지 않음 | 지침 |
+| 응답 품질이 낮음 | 모델, temperature, top_p |
+| 모델 실패가 잦음 | fallback 모델 |
+| 도구를 쓰지 않음 | 도구/MCP 도구 연결, 지침 |
+| 시작 질문이 부족함 | 오프너 |
+| 자동 실행이 필요함 | 스케줄 |
+
+## 7. 사용량 확인
+
+테스트 채팅 후 **Settings > Usage** 화면을 열어 요청 수, 토큰, 비용이 기록되는지 확인합니다. 사용량 API는 사용자 소유 에이전트와 모델 기준으로 집계되며, 대시보드에서는 기간과 그룹 기준으로 볼 수 있습니다.
+
+이 마지막 확인은 채팅 경로가 모델 런타임까지 도달했고 사용량 메타데이터를 기록했다는 증거입니다. 채팅은 성공했지만 사용량이 비어 있다면 모델 가격 메타데이터와 대화 실행 상세를 확인하세요.
+
+## 다음 단계
+
+<CardGroup cols={2}>
+  <Card title="에이전트 설정 관리" icon="settings" href="/hancom/moldy/ko/agent-settings">
+    모델 fallback, 도구, MCP 도구, 스킬, 오프너, 스케줄을 조정합니다.
+  </Card>
+  <Card title="MCP 서버 등록" icon="server" href="/hancom/moldy/ko/mcp-servers">
+    외부 MCP 서버를 probe하고 도구를 발견해 에이전트에 연결합니다.
+  </Card>
+  <Card title="설정과 내비게이션" icon="settings" href="/hancom/moldy/ko/settings">
+    자격증명, 모델, 스케줄, 사용량, 메모리, 파일처럼 이동한 메뉴를 찾습니다.
+  </Card>
+  <Card title="메모리" icon="brain" href="/hancom/moldy/ko/memory">
+    사용자 메모리, 에이전트 override, 저장 승인 정책을 설정합니다.
+  </Card>
+  <Card title="파일과 아티팩트" icon="files" href="/hancom/moldy/ko/files-artifacts">
+    생성 파일을 preview, favorite, download, trace합니다.
+  </Card>
+  <Card title="Agent API" icon="code" href="/hancom/moldy/ko/agent-api">
+    조건을 만족하는 에이전트를 배포하고 서버용 API 키를 만듭니다.
+  </Card>
+  <Card title="마켓플레이스 설치와 게시" icon="building-store" href="/hancom/moldy/ko/marketplace-install-publish">
+    공유된 스킬을 설치하고 필요한 자격증명을 연결합니다.
+  </Card>
+  <Card title="문제 해결" icon="help-circle" href="/hancom/moldy/ko/troubleshooting">
+    로그인, 모델, MCP, 스케줄, 마켓플레이스 오류를 점검합니다.
+  </Card>
+</CardGroup>

@@ -1,0 +1,45 @@
+---
+title: API reference
+description: Understand the scope and authentication model for the Moldy REST API.
+---
+
+The Moldy API reference is generated from the running backend's `/openapi.json`. This docs site stores the OpenAPI snapshot at `src/openapi/moldy-openapi.json`, and the API Reference tab exposes endpoint-level schemas.
+
+Use this page as the entry point for developer documentation. It explains authentication, links to the grouped endpoint index, and points to focused guides for login, CSRF, conversation streaming, Agent API, files, memory, and trace lookup.
+
+## Authentication
+
+The browser app calls the API with HttpOnly cookies and a CSRF token after login. State-changing requests require the CSRF header.
+
+See [API authentication and CSRF](/hancom/moldy/en/api-auth) for the detailed flow.
+
+## Main API groups
+
+| Group | Purpose |
+| --- | --- |
+| `auth` | Register, log in, log out, and check session state |
+| `audit` | User and operator activity logs |
+| `agent-api`, `agent-runtime-api` | External Agent API deployment, keys, and `/v1` runtime calls |
+| `agents` | Create, read, update, and delete agents |
+| `builder` | Conversational agent creation sessions |
+| `conversations` | Conversations, messages, streaming, and branches |
+| `artifacts`, `memory` | Generated files and long-term memory controls |
+| `tools`, `mcp`, `skills` | Tools, MCP servers, and skills |
+| `credentials`, `models`, `system-llm-settings` | Credentials, models, and System LLM configuration |
+| `triggers`, `usage`, `marketplace`, `shares` | Schedules, usage, marketplace resources, and public share reads |
+
+The API groups mirror Moldy's product areas. If a UI screen changes, verify the matching API group and update both the user guide and OpenAPI snapshot together.
+
+## Developer guides
+
+| Guide | Covers |
+| --- | --- |
+| [API Cookbook](/hancom/moldy/en/api-cookbook) | Login, CSRF, conversation streaming, artifact download, Agent API curl examples |
+| [Backend API endpoint list](/hancom/moldy/en/api-endpoints) | Full endpoint index and group purpose from the OpenAPI snapshot |
+| [API authentication and CSRF](/hancom/moldy/en/api-auth) | Login, cookies, CSRF, operator permission |
+| [Chat streaming API](/hancom/moldy/en/api-chat-streaming) | Conversation creation, SSE, resume, edit, regenerate, traces |
+| [Agent API](/hancom/moldy/en/agent-api) | External deployment, API keys, wait/stream/thread runtime calls |
+
+<Tip>
+Run `pnpm run openapi` to refresh the API snapshot.
+</Tip>

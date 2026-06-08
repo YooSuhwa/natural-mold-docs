@@ -1,0 +1,94 @@
+---
+title: 오류 메시지 사전
+description: Moldy에서 자주 만나는 인증, 모델, 도구, MCP, 스케줄, 파일, 공유 오류를 원인별로 분류합니다.
+---
+
+오류 메시지 사전은 문제 해결 문서보다 더 세부적인 분류표입니다. 화면에 보이는 증상, API 상태 코드, 카드 상태, trace 단서를 함께 보고 어떤 설정을 먼저 확인할지 결정할 때 사용합니다.
+
+일반 흐름은 [문제 해결](/hancom/moldy/ko/troubleshooting)을 먼저 보고, 반복되는 오류나 카드별 오류는 이 페이지에서 분류하세요.
+
+## 상태 코드 기준
+
+| 상태 | 자주 있는 의미 | 먼저 확인 |
+| --- | --- | --- |
+| `400` | payload 형식, 잘못된 필드, 지원하지 않는 transport | OpenAPI schema, UI 입력값 |
+| `401` | 로그인 안 됨, 세션 만료, Agent API key 누락 | `/api/auth/me`, cookie, bearer key |
+| `403` | CSRF 실패, 운영자 권한 없음, API key scope 부족 | `X-CSRF-Token`, `super_user`, key scope |
+| `404` | 없거나 권한 없는 리소스, 회수된 share token | 현재 사용자, owner, token 상태 |
+| `409` | 중복 이름/키, 이미 등록된 모델/리소스 | 기존 목록, unique field |
+| `422` | schema validation 실패 | request body, enum, UUID |
+| `429` | rate limit 또는 quota | Agent API limit, public share rate limit |
+| `500` | backend/runtime/storage 오류 | trace, server log, artifact status |
+
+## 인증과 CSRF
+
+| 증상 | 가능 원인 | 조치 |
+| --- | --- | --- |
+| 로그인 뒤 바로 dashboard가 안 열림 | API base URL, CORS, cookie 저장 실패 | backend origin, CORS allow origin, browser cookie 정책 확인 |
+| `GET /api/auth/me`가 실패 | session cookie 없음 또는 만료 | 다시 로그인하고 cookie jar 확인 |
+| mutation만 `403` | CSRF 누락 또는 mismatch | `X-CSRF-Token`과 `moldy_csrf` cookie 확인 |
+| 운영자 화면 접근 실패 | `super_user` 아님 | 운영자 계정으로 로그인 |
+| `/v1/*` 호출 실패 | Agent API key 누락 또는 revoked | key prefix/last four, revoked 상태 확인 |
+
+## 모델과 런타임
+
+| 증상 | 가능 원인 | 조치 |
+| --- | --- | --- |
+| Builder가 응답하지 않음 | System LLM 미설정 | **System LLM** role slot 확인 |
+| 채팅 응답 없음 | 에이전트 기본 모델 또는 사용자 credential 없음 | agent settings, Models, Credentials 확인 |
+| 도구 호출이 안 됨 | 모델이 tool calling을 지원하지 않음 | 모델 capability와 fallback 확인 |
+| fallback이 기대와 다름 | fallback chain 또는 hidden model 상태 | Models와 agent setting 확인 |
+| 비용/usage가 이상함 | pricing metadata 누락 또는 모델명 mismatch | model catalog와 usage aggregate 확인 |
+
+## 도구와 MCP
+
+| 증상 | 가능 원인 | 조치 |
+| --- | --- | --- |
+| tool card 실패 | 입력 오류, credential 미등록, tool runtime 오류 | 카드 input/output과 trace 확인 |
+| MCP probe 실패 | URL, command, transport, header/env var 오류 | transport별 필수값 확인 |
+| MCP discover 결과 없음 | 서버가 tool descriptor를 반환하지 않음 | 서버 test, registry import, credential template 확인 |
+| stdio MCP가 시작 안 됨 | command path 또는 env var 누락 | 실행 파일 경로와 env var 바인딩 확인 |
+| 도구가 agent에 안 보임 | discover 후 agent에 선택하지 않음 | agent settings의 MCP tool selection 확인 |
+
+## 채팅과 인라인 컴포넌트
+
+| 증상 | 가능 원인 | 조치 |
+| --- | --- | --- |
+| Markdown 표가 잠깐 깨짐 | 스트리밍 중 부분 문법 | 메시지 완료 후 다시 확인 |
+| Mermaid가 diagram으로 안 보임 | 문법 오류 또는 unsupported syntax | 코드 블록 내용을 수정 요청 |
+| approval 카드가 만료됨 | 사용자가 제때 응답하지 않음 | 새 메시지로 재시도 또는 resume 가능성 확인 |
+| memory proposal이 원치 않는 정보 포함 | 지침 또는 memory 정책 문제 | proposal 거절, agent/user memory 설정 수정 |
+| sub-agent 결과가 없음 | 위임 task 실패 | sub-agent 카드와 원 conversation trace 확인 |
+
+## 파일과 artifact
+
+| 증상 | 가능 원인 | 조치 |
+| --- | --- | --- |
+| artifact가 목록에 없음 | 파일을 생성하지 않았거나 owner가 다름 | run ID, source tool call, conversation ID 확인 |
+| preview 실패 | MIME/extension 미지원, size limit, status 미완료 | [아티팩트 뷰어 매트릭스](/hancom/moldy/ko/artifact-viewers) 확인 |
+| download 실패 | storage object 없음 또는 `ready` 아님 | artifact status와 storage 설정 확인 |
+| 공유 파일이 404 | share token 회수 또는 artifact가 공유 대화에 없음 | active share와 artifact relation 확인 |
+| 오래된 파일 표시 | current version이 아님 | version number와 update time 확인 |
+
+## 스케줄과 Agent API
+
+| 증상 | 가능 원인 | 조치 |
+| --- | --- | --- |
+| schedule이 실행 안 됨 | inactive, timezone, cron, max_runs, end_at | trigger detail과 summary 확인 |
+| run은 있는데 결과가 없음 | runtime 실패 또는 target conversation 문제 | run history, trace id, output preview 확인 |
+| `/v1/runs/stream` 실패 | key scope 부족 또는 deployment streaming disabled | key scope와 deployment 설정 확인 |
+| `/v1/agents`가 비어 있음 | key가 selected deployment만 허용 | key deployment binding 확인 |
+| 외부 호출이 너무 많음 | rate limit/daily token limit 없음 | deployment limit과 key scope 조정 |
+
+## 보고할 때 포함할 정보
+
+- 현재 사용자 역할과 `super_user` 여부.
+- 화면 URL 또는 route.
+- API status code와 endpoint.
+- conversation ID, run ID, trace ID.
+- agent ID 또는 deployment public ID.
+- artifact ID, version, source tool call.
+- 오류가 보이는 카드 이름과 상태.
+
+민감한 cookie, token, API key, credential secret, customer data는 포함하지 마세요.
+

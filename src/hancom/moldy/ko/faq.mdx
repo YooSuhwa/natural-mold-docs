@@ -1,0 +1,81 @@
+---
+title: FAQ
+description: Moldy 문서를 보며 자주 묻는 기능, 권한, 채팅, 파일, API, 운영 질문에 답합니다.
+---
+
+FAQ는 Moldy를 처음 쓰거나 문제를 분류할 때 빠르게 답을 찾는 문서입니다. 자세한 절차가 필요한 질문은 각 전문 가이드로 연결합니다.
+
+## 시작과 메뉴
+
+### 처음에는 어떤 문서부터 보면 되나요?
+
+처음 사용하는 사용자는 [빠른 시작](/hancom/moldy/ko/quickstart)을 먼저 봅니다. 제품 구조를 훑고 싶다면 [Moldy 소개](/hancom/moldy/ko)를, 실제 업무 흐름을 따라 하려면 [사용 시나리오와 레시피](/hancom/moldy/ko/recipes)를 봅니다.
+
+### Tools, MCP Servers, Skills는 무엇이 다른가요?
+
+Tools는 Moldy 안에 등록된 단일 도구 카탈로그이고, MCP Servers는 외부 MCP tool collection을 연결하는 설정이며, Skills는 파일과 지침을 묶은 재사용 가능한 능력입니다. 차이는 [Tools, MCP, Skills](/hancom/moldy/ko/tools-mcp)에 정리되어 있습니다.
+
+### 설정 메뉴는 어디에 있나요?
+
+사용자 메뉴에서 설정 사이드바를 엽니다. Settings 영역에는 Memory, Files, Agent API, Credentials, Models, Schedules, Usage, 운영자 전용 Admin 기능이 있습니다.
+
+## 에이전트와 채팅
+
+### 새 에이전트는 어떻게 만드나요?
+
+대시보드의 **New Agent**에서 대화형 빌더, 직접 만들기, 템플릿 중 하나를 선택합니다. 자세한 절차는 [첫 에이전트 만들기](/hancom/moldy/ko/create-first-agent)를 참고하세요.
+
+### 채팅에서 카드가 많이 나오는데 어떻게 읽어야 하나요?
+
+채팅 카드는 도구 실행, 승인, 사용자 입력, 메모리 제안, 파일 생성, Builder 단계 같은 실행 상태를 보여줍니다. 카드별 의미는 [채팅 컴포넌트 갤러리](/hancom/moldy/ko/chat-components)를 참고하세요.
+
+### 응답이 중간에 끊기면 어떻게 하나요?
+
+먼저 대화의 trace와 stream reconnect 경로를 확인합니다. interrupt나 approval 대기 상태라면 resume이 필요할 수 있습니다. API 흐름은 [채팅 스트리밍 API](/hancom/moldy/ko/api-chat-streaming)를 참고하세요.
+
+## 파일과 공유
+
+### 생성된 파일은 어디에서 다시 볼 수 있나요?
+
+대화 artifact card, 오른쪽 artifact panel, **Settings > Files**에서 볼 수 있습니다. 여러 에이전트와 대화의 파일을 모아 보려면 Files가 가장 좋습니다.
+
+### DOCX, XLSX, PPTX, HWPX도 볼 수 있나요?
+
+Moldy는 여러 문서 형식에 preview provider를 제공합니다. 지원 형식과 fallback은 [아티팩트 뷰어 매트릭스](/hancom/moldy/ko/artifact-viewers)를 참고하세요.
+
+### 공유 링크는 안전한가요?
+
+공유 링크는 로그인 없는 read-only 공개 조회입니다. 만들기 전에 메시지, 도구 결과, 파일 preview를 모두 확인해야 합니다. 자세한 기준은 [보안과 프라이버시](/hancom/moldy/ko/security-privacy)를 참고하세요.
+
+## API와 운영
+
+### `/api/*`와 `/v1/*`는 무엇이 다른가요?
+
+`/api/*`는 브라우저 앱용 endpoint로 session cookie와 mutation CSRF가 필요합니다. `/v1/*`는 Agent API runtime endpoint로 server-side API key를 사용합니다.
+
+### API 예제는 어디에 있나요?
+
+실제 curl 흐름은 [API Cookbook](/hancom/moldy/ko/api-cookbook)에 있습니다. 전체 endpoint 목록은 [백엔드 API 전체 목록](/hancom/moldy/ko/api-endpoints)을 봅니다.
+
+### 운영자만 할 수 있는 기능은 무엇인가요?
+
+시스템 자격증명, System LLM, 모델 catalog mutation, 마켓플레이스 listing, 전체 활동 기록 같은 기능은 `super_user` 권한이 필요합니다.
+
+### 문서는 어떻게 계속 업데이트하나요?
+
+기능, 메뉴, API, 화면이 바뀌면 [릴리즈와 문서 업데이트](/hancom/moldy/ko/release-docs-updates)의 절차를 따라 KO/EN 문서, OpenAPI, 스크린샷, `llms.txt`, changelog를 함께 갱신합니다.
+
+## 문제 해결
+
+### 403이 나오면 무엇을 봐야 하나요?
+
+브라우저 session API라면 CSRF token과 `super_user` 권한을 확인합니다. Agent API라면 key scope, deployment permission, revoked 상태를 확인합니다.
+
+### 404가 나오면 리소스가 삭제된 건가요?
+
+항상 그렇지는 않습니다. Moldy는 존재하지 않는 리소스와 권한 없는 리소스를 같은 404 계열로 처리할 수 있습니다. 현재 사용자, 리소스 owner, share token 상태를 확인하세요.
+
+### 문제를 보고할 때 무엇을 포함해야 하나요?
+
+endpoint, status code, route, conversation ID, run ID, trace ID, artifact ID, deployment public ID처럼 secret이 아닌 식별자를 포함합니다. cookie, CSRF token, API key, credential secret은 포함하지 않습니다.
+

@@ -1,0 +1,414 @@
+# AGENTS.md
+
+This workspace is the Moldy documentation site. Use this file when a user asks to update the guide, refresh documentation after product changes, or inspect recent Moldy commits and bring the docs back in sync.
+
+## Scope
+
+- Docs workspace: `/Users/chester/dev/ref/docs-mold`
+- Product source workspace: `/Users/chester/dev/ref/natural-mold`
+- Documentation framework: Mintlify-style MDX under `src/`
+- Languages: Korean and English must stay in sync.
+- Source of truth: Moldy source code, running OpenAPI, verified screenshots, and browser-rendered pages. Do not document unverified features.
+
+This docs workspace is not currently a git repository. If you need product commit history, use git in `/Users/chester/dev/ref/natural-mold`.
+
+## Common User Requests
+
+When the user says one of these, treat it as a documentation refresh request:
+
+- "새 기능 추가됐으니 문서 업데이트해줘"
+- "최근 커밋 보고 가이드 업데이트해줘"
+- "메뉴 바뀐 것 문서에 반영해줘"
+- "API 바뀐 것 반영해줘"
+- "스크린샷 다시 찍고 문서 맞춰줘"
+- "이 기능을 가이드에 더 자세히 넣어줘"
+
+Do not stop at a summary unless the user explicitly asks for only analysis. Inspect the source, update the docs, regenerate artifacts when needed, and verify.
+
+## Key Files
+
+Navigation and global site files:
+
+- `src/docs.json`: navigation, tabs, language structure.
+- `src/index.mdx`: root docs landing/redirect content.
+- `src/style.css`: custom docs styling.
+- `src/language-redirect.js`: language redirect and language-button behavior.
+
+Main docs:
+
+- `src/hancom/moldy/ko/*.mdx`: Korean guides.
+- `src/hancom/moldy/en/*.mdx`: English guides.
+- Keep matching Korean and English pages aligned by structure and facts.
+
+Generated/reference artifacts:
+
+- `src/openapi/moldy-openapi.json`: exported OpenAPI snapshot.
+- `src/hancom/moldy/{ko,en}/api-endpoints.mdx`: generated endpoint index.
+- `planning/feature-inventory.md`: generated source-to-docs inventory.
+- `src/images/hancom/moldy/{ko,en}/*.png`: captured screenshots.
+
+Scripts:
+
+- `scripts/export-openapi.mjs`: exports OpenAPI from the running backend.
+- `scripts/build-api-endpoints-docs.mjs`: regenerates API endpoint MDX.
+- `scripts/build-feature-inventory.mjs`: regenerates feature inventory.
+- `scripts/capture-screenshots.mjs`: captures product screenshots.
+- `scripts/capture-ui-reference-images.mjs`: renders real Moldy chat ToolUI components and artifact preview providers in a temporary product route, then captures per-component reference images.
+- `scripts/check-sensitive-artifacts.mjs`: scans docs artifacts for secrets.
+- `scripts/check-docker-setup.mjs`: validates Docker setup.
+- `scripts/start-docs-dev.sh`: starts local docs preview.
+
+## Product Source Areas To Inspect
+
+Use `rg` first. The product source is large.
+
+Frontend routes and menus:
+
+- `/Users/chester/dev/ref/natural-mold/frontend/src/app/**/page.tsx`
+- `/Users/chester/dev/ref/natural-mold/frontend/src/components/layout/app-sidebar.tsx`
+- `/Users/chester/dev/ref/natural-mold/frontend/src/components/layout/settings-sidebar.tsx`
+
+Chat behavior:
+
+- `/Users/chester/dev/ref/natural-mold/frontend/src/components/chat/**`
+- `/Users/chester/dev/ref/natural-mold/frontend/src/lib/chat/**`
+- `/Users/chester/dev/ref/natural-mold/frontend/src/lib/sse/**`
+
+Artifacts and file viewers:
+
+- `/Users/chester/dev/ref/natural-mold/frontend/src/components/chat/artifacts/**`
+- `/Users/chester/dev/ref/natural-mold/frontend/src/components/artifacts/**`
+- `/Users/chester/dev/ref/natural-mold/frontend/src/lib/api/artifacts.ts`
+- `/Users/chester/dev/ref/natural-mold/backend/app/routers/artifacts.py`
+- `/Users/chester/dev/ref/natural-mold/backend/app/services/artifact_service.py`
+- `/Users/chester/dev/ref/natural-mold/backend/app/models/conversation_artifact.py`
+
+Backend APIs:
+
+- `/Users/chester/dev/ref/natural-mold/backend/app/routers/*.py`
+- `/Users/chester/dev/ref/natural-mold/backend/app/schemas/*.py`
+- `/Users/chester/dev/ref/natural-mold/backend/app/services/*.py`
+
+Tests and E2E evidence:
+
+- `/Users/chester/dev/ref/natural-mold/frontend/tests/**`
+- `/Users/chester/dev/ref/natural-mold/frontend/e2e/**`
+- `/Users/chester/dev/ref/natural-mold/backend/tests/**`
+
+## Recent Commit Workflow
+
+When asked to update from recent commits:
+
+1. Inspect recent commit subjects:
+
+```bash
+git -C /Users/chester/dev/ref/natural-mold log --oneline --decorate -20
+```
+
+2. Inspect changed files for likely product changes:
+
+```bash
+git -C /Users/chester/dev/ref/natural-mold show --stat --name-only <commit>
+git -C /Users/chester/dev/ref/natural-mold show --name-status --format=fuller <commit>
+```
+
+3. If the user gives a range, use:
+
+```bash
+git -C /Users/chester/dev/ref/natural-mold diff --name-status <old>..<new>
+git -C /Users/chester/dev/ref/natural-mold log --oneline <old>..<new>
+```
+
+4. Classify changes:
+
+| Change | Docs action |
+| --- | --- |
+| Frontend route/menu/page | Update `src/docs.json`, relevant guide pages, feature inventory, screenshots |
+| Chat UI/component | Update `chat-with-agent`, streaming/API docs, screenshots if visible |
+| Artifact/file viewer | Update `files-artifacts`, chat guide, API docs if endpoint changed |
+| Backend router/schema | Refresh OpenAPI and API endpoint docs |
+| Auth/permission/admin | Update access, settings, operator, and troubleshooting docs |
+| Marketplace/tools/MCP/skills | Update capability guides and install/publish docs |
+| Tests only | Inspect whether behavior changed; update docs only if user-facing behavior changed |
+
+5. Verify changed facts against source files, not commit messages alone.
+
+## Full Documentation Refresh Workflow
+
+Use this when the product changed broadly or the user asks for a complete refresh.
+
+1. Confirm the Moldy frontend and backend are running.
+2. Inspect menus, routes, backend routers, and changed commits.
+3. Refresh OpenAPI:
+
+```bash
+pnpm run openapi
+pnpm run api-docs
+```
+
+4. Refresh feature inventory:
+
+```bash
+pnpm run inventory
+```
+
+5. Capture screenshots if visible UI changed:
+
+```bash
+pnpm run capture
+```
+
+6. Update KO and EN MDX together.
+7. Update `src/docs.json` when pages, groups, tabs, or labels change.
+8. Update `src/hancom/moldy/{ko,en}/changelog.mdx` with documentation changes.
+9. Run verification commands in the "Verification" section.
+
+## Focused Update Workflow
+
+Use this when the user names a specific feature.
+
+1. Find source evidence with `rg`.
+2. Identify user-facing screens, states, permissions, APIs, and screenshots.
+3. Update the most relevant KO and EN pages.
+4. Add links to nearby guides so users can find the feature from overview, quickstart, API, and troubleshooting pages when relevant.
+5. Update changelog.
+6. Run focused verification.
+
+Examples:
+
+- Chat inline component change: update `chat-with-agent.mdx`, `api-chat-streaming.mdx` if the stream format changed, and screenshots if the visible card changed.
+- New artifact viewer: update `files-artifacts.mdx`, `chat-with-agent.mdx`, API docs if routes changed, and capture screenshots if the viewer is visible.
+- Menu rename: update `src/docs.json`, `settings.mdx`, `index.mdx`, `quickstart.mdx`, and screenshots if labels are visible.
+
+## Co-Update Matrix
+
+Use this matrix whenever any documentation page changes. The default rule is: update the Korean and English peers together, update discovery/navigation artifacts when findability changes, update changelog for user-facing guidance changes, and run verification before reporting completion.
+
+| If this changes | Also update |
+| --- | --- |
+| New page, removed page, renamed page | `src/docs.json`, KO/EN peer page, `src/llms.txt`, changelog, rendered page checks |
+| Menu label, route, or page location | `src/docs.json`, `settings.mdx`, `index.mdx`, `quickstart.mdx`, screenshots if visible, `release-docs-updates.mdx` if process changes |
+| Overview or quickstart guidance | KO/EN overview, KO/EN quickstart, `recipes.mdx`, `faq.mdx`, `src/llms.txt` |
+| Agent creation or settings behavior | `create-first-agent.mdx`, `agent-settings.mdx`, `recipes.mdx`, `faq.mdx`, screenshots if visible |
+| Chat behavior, streaming, resume, branch, feedback, share | `chat-with-agent.mdx`, `chat-components.mdx`, `api-chat-streaming.mdx`, `error-reference.mdx`, screenshots if visible |
+| New chat inline component or card state | `chat-components.mdx`, `chat-with-agent.mdx`, `error-reference.mdx`, `recipes.mdx` if it changes a workflow, `src/llms.txt` |
+| Artifact metadata, file library, generated file behavior | `files-artifacts.mdx`, `artifact-viewers.mdx`, `chat-components.mdx`, `security-privacy.mdx`, screenshots if visible |
+| New file preview provider, MIME handling, or fallback behavior | `artifact-viewers.mdx`, `files-artifacts.mdx`, `chat-components.mdx`, `error-reference.mdx`, `src/llms.txt` |
+| Chat/artifact real UI reference capture | `scripts/capture-ui-reference-images.mjs`, affected MDX image refs/alt text, changelog, `pnpm run capture:ui` |
+| Public share behavior | `access-oversight.mdx`, `security-privacy.mdx`, `files-artifacts.mdx`, `chat-with-agent.mdx`, `faq.mdx`, API docs if endpoints changed |
+| Memory behavior or memory proposal UI | `memory.mdx`, `chat-components.mdx`, `security-privacy.mdx`, `agent-settings.mdx`, `faq.mdx` |
+| Credential, model, System LLM, or operator setting | `models-credentials.mdx`, `operator-setup.mdx`, `system-llm.mdx`, `access-oversight.mdx`, `security-privacy.mdx`, `error-reference.mdx` |
+| Tools, MCP Servers, Skills, marketplace install/publish | `tools-mcp.mdx`, specific `tools.mdx`/`mcp-servers.mdx`/`skills.mdx`, `marketplace*.mdx`, `recipes.mdx`, `error-reference.mdx` |
+| Schedule behavior | `schedules.mdx`, `recipes.mdx`, `error-reference.mdx`, `usage.mdx` if cost/usage changes |
+| Agent API deployment, key, scope, runtime endpoint | `agent-api.mdx`, `api-cookbook.mdx`, `api-reference.mdx`, `api-endpoints.mdx`, `security-privacy.mdx`, `error-reference.mdx`, `faq.mdx` |
+| Backend router or schema | `src/openapi/moldy-openapi.json`, generated `api-endpoints.mdx`, `api-reference.mdx`, `api-cookbook.mdx` if examples change, relevant feature guide |
+| Auth, CSRF, permissions, audit | `api-auth.mdx`, `access-oversight.mdx`, `security-privacy.mdx`, `error-reference.mdx`, `faq.mdx` |
+| Troubleshooting or repeated support question | `troubleshooting.mdx`, `error-reference.mdx`, `faq.mdx`, related feature guide |
+| User workflow or scenario | `recipes.mdx`, related feature guide, `faq.mdx` if the question is common |
+| Screenshot route, visible UI label, or screen state | `scripts/capture-screenshots.mjs`, screenshot image pair under KO/EN if applicable, affected MDX alt text, sensitive checks |
+| GEO/SEO, source link, GitHub link, public discovery asset | `src/llms.txt`, `src/robots.txt` if crawler policy changes, `planning/geo-*.md`, `documentation-workflow.mdx`, changelog |
+| Documentation refresh process | `AGENTS.md`, `release-docs-updates.mdx`, `documentation-workflow.mdx`, changelog |
+| Custom topbar/style/language behavior | `src/docs.json`, `src/style.css`, `src/language-redirect.js`, browser/Playwright checks for desktop and language behavior |
+
+Do not manually edit generated artifacts when a script owns them. Regenerate instead: OpenAPI via `pnpm run openapi`, endpoint docs via `pnpm run api-docs`, feature inventory via `pnpm run inventory`, and screenshots via `pnpm run capture`.
+
+## What A Good Guide Must Include
+
+For each important feature, include:
+
+- What the feature does.
+- Where users find it in the UI.
+- Who can use it and any permission limits.
+- The normal workflow in numbered steps.
+- Important states, edge cases, and failure checks.
+- Related APIs when relevant.
+- Related screenshots when the page is visual.
+- Safety notes for credentials, private data, generated files, public shares, and admin actions.
+
+Prefer concrete product nouns and menu names over generic marketing language. If a feature is not confirmed in the source, do not include it.
+
+## Chat And Artifact Coverage Expectations
+
+The chat guide should stay current for:
+
+- Streaming behavior and reconnect/resume behavior.
+- Draft conversations.
+- Message edit, regenerate, branch switch, feedback, delete, and share flows.
+- Inline Markdown, code, Mermaid, KaTeX, image, search-result, file-tool, generic-tool, plan, approval, user-input, memory, sub-agent, and Builder cards.
+- Tool result states and right-panel expansion.
+- Generated file/artifact cards.
+- The dedicated `chat-components.mdx` gallery when component names, states, or user actions change.
+
+The files/artifacts guide should stay current for:
+
+- Artifact metadata: path, display name, MIME type, extension, kind, size, hash, status, source tool call, run, conversation, agent, version, preview URL, download URL.
+- File library filters, stats, favorites, recent files, preview, download.
+- Conversation artifact cards and right rail behavior.
+- Public share artifact behavior.
+- Viewer matrix: image, audio/video, PDF, HTML, Markdown, Mermaid, code, text, CSV/TSV, JSON, YAML/TOML, HWP/HWPX, DOCX, XLS/XLSX, PPTX, fallback download.
+- The dedicated `artifact-viewers.mdx` matrix when preview providers, MIME handling, fallback behavior, or sharing behavior changes.
+
+The scenario and operations layer should stay current for:
+
+- `recipes.mdx` when a product change enables or changes a real user workflow.
+- `api-cookbook.mdx` when authentication, CSRF, conversation streaming, artifact, share, or Agent API request shapes change.
+- `error-reference.mdx` when status codes, card states, MCP failures, schedule failures, or Agent API failures change.
+- `security-privacy.mdx` when credentials, memory, generated files, public shares, Agent API keys, audit logs, or screenshot safety rules change.
+- `release-docs-updates.mdx` when the documentation refresh process changes.
+- `faq.mdx` when users repeatedly ask a question that should have a quick answer.
+
+## Screenshots
+
+Run screenshots when UI labels, menus, layouts, visible cards, or page states changed.
+
+```bash
+pnpm run capture
+```
+
+Run real UI reference captures when chat inline components or artifact preview providers changed.
+
+```bash
+pnpm run capture:ui
+```
+
+`capture:ui` creates a temporary product route at `frontend/src/app/docs-capture-internal` and temporary public files at `frontend/public/__docs-capture`, captures images into `src/images/hancom/moldy/{ko,en}`, and removes the temporary product files at the end. If the Moldy frontend dev server was already running before the temporary route existed, prepare the route first, restart the frontend, then capture:
+
+```bash
+pnpm run capture:ui -- --prepare-only
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8001 pnpm --dir /Users/chester/dev/ref/natural-mold/frontend dev --port 3000
+pnpm run capture:ui -- --skip-prepare
+```
+
+Do not replace these captures with synthetic mockups. The chat and artifact gallery pages should show real product components unless the user explicitly asks for conceptual illustrations.
+
+Before adding new screenshots or routes:
+
+- Update `scripts/capture-screenshots.mjs`.
+- Add masking for visible user IDs, email, secrets, private paths, API keys, conversation text, memory content, generated file names, and other sensitive values.
+- Keep KO and EN screenshots aligned.
+- Run sensitive checks after capture.
+
+## OpenAPI And API Docs
+
+If backend routes or schemas changed:
+
+```bash
+pnpm run openapi
+pnpm run api-docs
+```
+
+If new tags appear, update `scripts/build-api-endpoints-docs.mjs` metadata so generated endpoint pages have useful grouping and Korean labels.
+
+## GEO/SEO And AI Visibility Updates
+
+Use this when the user asks to run GEO/SEO, improve AI search visibility, update docs for ChatGPT/Claude/Perplexity/Gemini discoverability, or refresh the guide after broad product changes.
+
+1. Check rendered technical assets on the active docs URL:
+
+```bash
+curl -I http://localhost:3003/llms.txt
+curl -I http://localhost:3003/robots.txt
+curl -I http://localhost:3003/sitemap.xml
+```
+
+2. Scan representative Korean and English pages for answer-first summaries, descriptive headings, tables, workflow steps, source-backed claims, and useful internal links.
+3. Keep `src/llms.txt` updated when important menu pages, API guides, artifact viewer docs, or documentation workflow pages change.
+4. Keep `src/robots.txt` crawler-friendly unless a deployment-specific policy requires restrictions.
+5. Do not publish placeholder production URLs. Only create or update `sitemap.xml`, canonical metadata, and JSON-LD after the final public docs base URL is known.
+6. Record the audit result under `planning/` when the user asks for a GEO pass, including scores, key findings, applied changes, and remaining production tasks.
+7. Update `src/hancom/moldy/{ko,en}/documentation-workflow.mdx` and `src/hancom/moldy/{ko,en}/changelog.mdx` when the GEO process itself changes.
+
+## Verification
+
+Always run verification before saying the docs are complete.
+
+Minimum for MDX-only edits:
+
+```bash
+pnpm run docs:check
+pnpm run check:sensitive
+```
+
+If screenshots changed:
+
+```bash
+pnpm run capture
+pnpm run check:sensitive
+```
+
+If chat inline component or artifact viewer captures changed:
+
+```bash
+pnpm run capture:ui
+pnpm run check:sensitive
+```
+
+If Docker files changed:
+
+```bash
+pnpm run docker:check
+```
+
+If API docs changed:
+
+```bash
+pnpm run openapi
+pnpm run api-docs
+pnpm run docs:check
+```
+
+If navigation, language redirect, or major pages changed, start the docs server and use browser/Playwright checks:
+
+```bash
+pnpm run docs:dev
+```
+
+The default port is `3001`, but Mintlify may fall back to another port such as `3002` or `3003`. Use the actual URL printed by the server.
+
+Suggested rendered pages to check:
+
+- `/`
+- `/llms.txt`
+- `/robots.txt`
+- `/hancom/moldy/ko`
+- `/hancom/moldy/en`
+- `/hancom/moldy/ko/settings`
+- `/hancom/moldy/en/settings`
+- `/hancom/moldy/ko/chat-with-agent`
+- `/hancom/moldy/en/chat-with-agent`
+- `/hancom/moldy/ko/files-artifacts`
+- `/hancom/moldy/en/files-artifacts`
+- `/hancom/moldy/en/api-reference`
+
+Also verify:
+
+- Root redirects to a language page.
+- The language selector is visible and opens KO/EN options.
+- API Reference links navigate correctly.
+- Mobile pages do not horizontally overflow.
+
+## Sensitive Data Rules
+
+- Never include real credentials, tokens, user passwords, private identifiers, account emails, API keys, or internal secrets in docs or screenshots.
+- Do not quote values from `.env`.
+- Do not assume screenshots are safe just because text docs passed. Re-run sensitive checks and inspect new screenshots when capture routes change.
+- Public share and generated-file docs must remind users to review messages, tool results, and file previews before sharing.
+
+## Writing Style
+
+- Write Korean and English pages as peers, not as one-line translations.
+- Use actual Moldy menu labels. Current important labels include New Agent, Agent Templates, Marketplace, Capabilities, Tools, MCP Servers, Skills, Settings, Memory, Files, Agent API, Credentials, Models, Schedules, Usage, Marketplace Admin, System Credentials, System LLM, and All Activity.
+- Prefer answer-first paragraphs, short tables, and workflow steps.
+- Do not invent roadmap promises.
+- Do not document external products or integrations unless the feature is present in Moldy source and relevant to user-facing docs.
+- Keep docs detailed enough for users to operate the feature without reading source code.
+
+## Final Response Checklist
+
+When reporting back to the user, include:
+
+- Files changed.
+- What content was added or updated.
+- Verification commands and their outcomes.
+- Local docs URL if a docs server is running.
+- Any limitations, such as "docs-mold is not a git repository" or "screenshots were not regenerated because only prose changed."

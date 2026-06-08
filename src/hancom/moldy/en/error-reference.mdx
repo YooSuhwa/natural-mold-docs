@@ -1,0 +1,94 @@
+---
+title: Error reference
+description: Classify common Moldy authentication, model, tool, MCP, schedule, file, sharing, and API failures.
+---
+
+The error reference is a detailed triage table. Use it with UI symptoms, API status codes, card state, and trace clues to decide which configuration to inspect first.
+
+Start with [Troubleshooting](/hancom/moldy/en/troubleshooting) for general flows, then use this page for repeated or card-specific failures.
+
+## Status code guide
+
+| Status | Common meaning | Check first |
+| --- | --- | --- |
+| `400` | Payload shape, wrong field, unsupported transport | OpenAPI schema, UI input |
+| `401` | Not logged in, expired session, missing Agent API key | `/api/auth/me`, cookie, bearer key |
+| `403` | CSRF failure, missing operator permission, missing API key scope | `X-CSRF-Token`, `super_user`, key scope |
+| `404` | Missing or unauthorized resource, revoked share token | Current user, owner, token state |
+| `409` | Duplicate name/key or existing resource | Existing list, unique field |
+| `422` | Schema validation failure | Request body, enum, UUID |
+| `429` | Rate limit or quota | Agent API limit, public share rate limit |
+| `500` | Backend, runtime, or storage error | Trace, server log, artifact status |
+
+## Authentication and CSRF
+
+| Symptom | Likely cause | Action |
+| --- | --- | --- |
+| Dashboard does not open after login | API base URL, CORS, cookie persistence | Check backend origin, CORS allow origin, browser cookie policy |
+| `GET /api/auth/me` fails | Missing or expired session cookie | Log in again and inspect cookie jar |
+| Only mutations return `403` | Missing or mismatched CSRF | Check `X-CSRF-Token` and `moldy_csrf` cookie |
+| Operator page access fails | User is not `super_user` | Log in as an operator |
+| `/v1/*` call fails | Missing or revoked Agent API key | Check key prefix/last four and revoked status |
+
+## Models and runtime
+
+| Symptom | Likely cause | Action |
+| --- | --- | --- |
+| Builder does not respond | System LLM role not configured | Check **System LLM** role slots |
+| Chat produces no response | Missing agent model or user credential | Check agent settings, Models, Credentials |
+| Tool calling does not happen | Model lacks tool-calling support | Check model capability and fallback |
+| Fallback is unexpected | Fallback chain or hidden model state | Check Models and agent settings |
+| Usage/cost looks wrong | Missing pricing metadata or model-name mismatch | Check model catalog and usage aggregate |
+
+## Tools and MCP
+
+| Symptom | Likely cause | Action |
+| --- | --- | --- |
+| Tool card fails | Bad input, missing credential, runtime error | Inspect card input/output and trace |
+| MCP probe fails | URL, command, transport, header/env var error | Check required fields by transport |
+| MCP discover returns nothing | Server returns no tool descriptors | Check server test, registry import, credential template |
+| stdio MCP does not start | Command path or env var missing | Check executable path and env var binding |
+| Tool not visible on agent | Tool discovered but not selected | Check agent MCP tool selection |
+
+## Chat and inline components
+
+| Symptom | Likely cause | Action |
+| --- | --- | --- |
+| Markdown table looks broken briefly | Partial syntax during streaming | Wait for message completion |
+| Mermaid does not render | Syntax error or unsupported syntax | Ask for corrected code block |
+| Approval card expires | User did not respond in time | Retry or check resume support |
+| Memory proposal contains unwanted data | Instructions or memory policy issue | Reject proposal, update memory settings |
+| Sub-agent has no result | Delegated task failed | Inspect sub-agent card and parent trace |
+
+## Files and artifacts
+
+| Symptom | Likely cause | Action |
+| --- | --- | --- |
+| Artifact missing from list | No file was created or owner differs | Check run ID, source tool call, conversation ID |
+| Preview fails | Unsupported MIME/extension, size limit, unfinished status | Check the [Artifact viewer matrix](/hancom/moldy/en/artifact-viewers) |
+| Download fails | Missing storage object or not `ready` | Check artifact status and storage settings |
+| Shared file returns 404 | Share token revoked or artifact not in shared conversation | Check active share and artifact relation |
+| Old file appears | Current version differs | Check version number and update time |
+
+## Schedules and Agent API
+
+| Symptom | Likely cause | Action |
+| --- | --- | --- |
+| Schedule does not run | Inactive, timezone, cron, max_runs, end_at | Check trigger detail and summary |
+| Run exists but no result | Runtime failure or target conversation issue | Check run history, trace ID, output preview |
+| `/v1/runs/stream` fails | Missing key scope or deployment streaming disabled | Check key scope and deployment settings |
+| `/v1/agents` is empty | Key allows selected deployments only | Check key deployment binding |
+| External calls are too frequent | Missing rate or daily token limit | Adjust deployment limit and key scope |
+
+## Include this when reporting
+
+- Current user role and whether `super_user` is present.
+- Screen URL or route.
+- API status code and endpoint.
+- Conversation ID, run ID, trace ID.
+- Agent ID or deployment public ID.
+- Artifact ID, version, source tool call.
+- Card name and state.
+
+Do not include cookies, tokens, API keys, credential secrets, or customer data.
+

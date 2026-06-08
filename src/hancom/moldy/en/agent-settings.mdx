@@ -1,0 +1,143 @@
+---
+title: Manage agent settings
+description: Configure Moldy agent instructions, model, tools, skills, sub-agents, middleware, memory, API exposure, openers, and schedules.
+---
+
+The agent settings page is the control plane for a Moldy agent. It changes the instructions, model, tools, MCP tools, skills, sub-agents, middleware, memory behavior, opener questions, schedules, API-related settings, and visual identity that the runtime loads when a conversation runs.
+
+These sections are backed by the `agents/[agentId]/settings` page and the `agent.visualSettings` flow in the Moldy frontend. Use this page when you need to explain which saved fields affect agent behavior and which panels are only for testing, review, or presentation.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-settings.png" alt="Moldy agent settings screen" />
+
+## Page structure
+
+| Area | What it controls |
+| --- | --- |
+| Basic information | Name, description, system instructions |
+| Model | Primary model, temperature, top_p, max_tokens, fallback model order |
+| Connections | Built-in tools, MCP tools, skills |
+| Components | Sub-agents and middleware |
+| Right panel | Fix, test chat, opener questions, schedules, settings actions, API panel |
+| Visual mode | Node-based view of agent, tools, skills, schedules, and middleware |
+
+The form view is best for exact configuration changes. Visual mode is best for inspecting relationships between the agent, model, extensions, and schedules without changing the underlying runtime model.
+
+## Write instructions
+
+Instructions define the agent's job, boundaries, response style, and tool-use policy. Moldy stores this as `system_prompt` and includes it in the runtime configuration for conversations.
+
+Useful instructions usually include:
+
+- The work the agent is responsible for
+- Expected response tone and format
+- When the agent should use tools
+- When the agent should ask a clarifying question
+- When the agent should confirm before writing to external systems
+
+## Model and fallback settings
+
+Model settings choose the primary model and model parameters. Moldy stores `model_params` and `model_fallback_ids`, and the runtime resolves the fallback list in order.
+
+| Field | Meaning |
+| --- | --- |
+| Primary model | The LLM the agent calls first |
+| temperature | Response variety |
+| top_p | Sampling range |
+| max_tokens | Maximum generated tokens |
+| Fallback models | Ordered alternatives when the primary model fails |
+
+<Tip>
+Fallback models can use different providers, but each selected model still needs a usable credential.
+</Tip>
+
+## Attach tools, MCP tools, and skills
+
+Agents can use three extension types.
+
+- **Tools** are registered single actions.
+- **MCP tools** are discovered from MCP servers you registered.
+- **Skills** are reusable knowledge, files, and executable packages.
+
+Only attached items are passed to that agent at runtime. Registering an MCP server does not automatically make every tool available to every agent.
+
+## Sub-agents
+
+Sub-agents let one agent delegate work to another agent. The settings UI filters out the current agent, and the API rejects duplicate sub-agent IDs.
+
+Use sub-agents when you want to:
+
+- Separate research and summarization
+- Isolate work that needs specific tool access
+- Break a larger workflow into smaller specialist tasks
+
+## Middleware
+
+Middleware adds runtime behavior to the agent. The API accepts a `middleware_configs` array, and each entry must use a type registered in the backend middleware registry.
+
+<Warning>
+Unknown middleware types are rejected by the server. When adding a new middleware, update both the frontend selection list and the backend registry.
+</Warning>
+
+## Opener questions
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-settings-opener.png" alt="Opener question editor in the right panel of Moldy agent settings" />
+
+Openers are suggested questions shown before a user starts chatting. Moldy allows up to 12 questions. Each question must be non-empty and within the configured length limit.
+
+Good openers are immediately actionable:
+
+```txt
+Summarize this week's usage.
+Check the recent failed schedules.
+Tell me which MCP tools are available.
+```
+
+## Fix and test chat
+
+The Fix panel lets you adjust the agent configuration through natural language. Test chat lets you validate behavior before or after saving.
+
+1. Update instructions, model, and tool configuration.
+2. Send a small request in test chat.
+3. Review tool calls, response format, and token/cost information.
+4. Adjust with the Fix panel or form settings.
+5. Save the changes.
+
+## Schedule panel
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-settings-schedule.png" alt="Schedules tab in the right panel of Moldy agent settings" />
+
+The schedule tab lists triggers attached to the agent and lets you add new ones. Schedules use the `one_time`, `interval`, or `cron` trigger types. Each run can append to a schedule conversation or use a separate conversation policy.
+
+## Memory settings
+
+Agent-level memory settings can inherit the user's global memory policy or override it for this agent. Use overrides when the agent handles sensitive, temporary, or agent-specific information.
+
+| Setting | Values |
+| --- | --- |
+| Memory policy | `inherit`, `off`, `ask`, `auto` |
+| Scope policy | `inherit`, `agent_only`, `user_and_agent` |
+| Trigger policy | `inherit`, `off`, `auto` |
+
+See [Manage memory](/hancom/moldy/en/memory) for the global policy and saved memory record workflow.
+
+## API panel
+
+The API panel connects this agent to the broader [Agent API](/hancom/moldy/en/agent-api) workflow. External API deployment requires an eligible agent and server-side API keys. If an agent is blocked from deployment, confirm its credential resolution mode and whether it satisfies the fixed-identity requirement for API calls.
+
+## Image and settings actions
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-settings-settings.png" alt="Settings panel for generating or regenerating an agent avatar image" />
+
+The settings tab exposes agent avatar image generation and regeneration. The action calls the agent image API and shows loading/progress state while the image is being generated.
+
+## Visual mode
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-settings-visual.png" alt="Visual settings mode showing agent, tools, skills, schedules, and middleware as nodes" />
+
+Visual mode shows the same configuration as a node graph. Agent, model, toolbox, skills, sub-agents, middleware, and schedule nodes make it easier to spot missing connections or overly complex setups.
+
+## Save and delete carefully
+
+The settings page tracks unsaved changes. A test chat can help validate behavior, but saved settings are the source that normal conversations and schedules use.
+
+Deleting an agent is irreversible, so review linked conversations and schedules first. If an agent has active schedules, pause or remove those schedules before deleting the agent.

@@ -1,0 +1,80 @@
+---
+title: 앱 설정과 내비게이션
+description: Moldy의 최신 메뉴 구조, 설정 사이드바, 계정 설정, 리소스 페이지, 운영자 전용 관리 페이지를 설명합니다.
+---
+
+Moldy는 이제 두 가지 내비게이션 맥락을 사용합니다. 기본 사이드바는 에이전트를 만들고 실행하는 곳이고, 설정 사이드바는 계정, API, 리소스, 운영자 관리를 모아 둔 곳입니다.
+
+사용자가 “메뉴가 바뀌었다”, “자격증명/모델/스케줄/사용량이 어디로 갔는지 모르겠다”, “어떤 설정이 개인 설정이고 어떤 설정이 운영자 전용인지 알고 싶다”고 할 때 이 문서를 기준으로 안내하세요.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/settings.png" alt="Moldy 설정 프로필 화면과 설정 사이드바" />
+
+## 기본 사이드바
+
+| 영역 | 열리는 화면 | 설명 |
+| --- | --- | --- |
+| 새 에이전트 | `/agents/new` | 대화형, 직접 만들기, 템플릿 생성 흐름의 시작점 |
+| 에이전트 템플릿 | `/agents/new/template` | 준비된 에이전트 패턴을 고르는 템플릿 갤러리 |
+| 마켓플레이스 | `/marketplace` | catalog, 설치, 업데이트, 게시, 상세 화면 |
+| 기능 | Tools, MCP Servers, Skills | 에이전트 확장 리소스를 묶은 접이식 그룹 |
+| 최근 에이전트 | 최근 사용 에이전트 경로 | 최근 활동 기준으로 표시 |
+| 하단 컨트롤 | 테마, 언어, 사용자 메뉴 | 사용자 메뉴에서 환경설정과 로그아웃 진입 |
+
+자격증명, 모델, 스케줄, 사용량의 기존 top-level route는 계속 동작하지만 이제 설정 화면으로 redirect됩니다. 운영 문서나 지원 안내에는 `/settings/...` 경로를 기준으로 쓰는 것을 권장합니다.
+
+## 설정 사이드바
+
+| 섹션 | 페이지 | 사용자 |
+| --- | --- | --- |
+| 계정 | 프로필, 메모리, 보안, 화면 및 언어, 활동 기록 | 인증된 사용자 |
+| API | Agent API | 고정 ID 에이전트를 외부 시스템에서 호출하려는 사용자 |
+| 리소스 | 파일, 자격증명, 모델, 스케줄, 사용량 | 자신의 런타임 입력과 결과를 관리하는 사용자 |
+| 관리자 | 운영자 관리, 시스템 자격증명, 시스템 LLM 설정, 전체 활동 기록 | `super_user` 운영자 |
+
+<Info>
+관리자 섹션은 운영자 권한이 있는 사용자에게만 표시됩니다. 로그인은 되지만 시스템 자격증명이나 시스템 LLM 설정이 보이지 않는다면 계정의 `super_user` 여부를 확인하세요.
+</Info>
+
+## 계정 설정
+
+프로필은 Moldy 채팅과 사용자 메뉴에 표시되는 이름과 아바타를 관리합니다. 화면 및 언어는 light/dark/system 테마와 `ko`, `en` 애플리케이션 locale을 관리합니다. 보안 화면은 현재 세션 기반 인증 상태와 비밀번호/세션 관리가 후속 단계에서 추가될 예정이라는 안내를 보여줍니다.
+
+활동 기록은 내 계정 범위의 audit event를 보여줍니다. 운영자는 전체 활동 기록에서 모든 사용자의 audit event를 확인할 수 있습니다.
+
+## 리소스 설정
+
+리소스는 에이전트를 만든 뒤 가장 자주 사용하는 설정 화면입니다.
+
+- **파일**은 대화 실행으로 생성된 artifact, preview, favorite, download, library stats를 보여줍니다.
+- **자격증명**은 복호화된 secret 값을 반환하지 않는 사용자 범위 secret 저장소입니다.
+- **모델**은 모델 catalog 등록, model test, credential 기반 model discovery, benchmark ranking 표시를 제공합니다.
+- **스케줄**은 사용자 에이전트의 trigger를 모아 보여주고 run-now 점검을 지원합니다.
+- **사용량**은 모델 실행에서 기록된 비용, token, request, 일별 aggregate를 요약합니다.
+
+## 운영자 설정
+
+운영자는 공용 플랫폼 동작을 준비합니다.
+
+- **운영자 관리**는 public marketplace item의 listed 상태를 검토합니다.
+- **시스템 자격증명**은 builder, assistant, image 등 platform workflow에 쓰는 운영자 범위 credential입니다.
+- **시스템 LLM 설정**은 platform workflow별 model slot을 지정합니다.
+- **전체 활동 기록**은 사용자 전체의 audit event를 추적합니다.
+
+운영자 credential과 일반 채팅 credential을 혼동하지 마세요. 일반 에이전트 대화는 여전히 선택한 모델에 맞는 사용자 credential 또는 런타임에서 허용된 credential 경로가 필요합니다.
+
+## 문제 해결
+
+| 증상 | 확인할 항목 |
+| --- | --- |
+| 메뉴가 보이지 않음 | 해당 페이지가 설정으로 이동했는지, 운영자 권한이 필요한지 확인 |
+| 자격증명 URL이 바뀜 | `/credentials`는 `/settings/credentials`로 redirect되므로 설정 URL을 문서 기준으로 사용 |
+| 언어가 바뀌지 않음 | 화면 및 언어 또는 사이드바 언어 컨트롤을 사용하고 locale cookie가 오래되었으면 새로고침 |
+| 활동 기록이 비어 있음 | scope, filter, request ID, run ID, user/API key 실행 주체를 확인 |
+
+## 관련 API
+
+- `/api/auth/me`, `/api/auth/me/profile`, `/api/auth/me/avatar-image`
+- `/api/audit-events`
+- `/api/credentials`, `/api/models`, `/api/triggers`, `/api/usage/summary`
+- `/api/system-credentials`, `/api/system-llm-settings`
+

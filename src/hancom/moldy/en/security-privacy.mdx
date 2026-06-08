@@ -1,0 +1,89 @@
+---
+title: Security and privacy
+description: Operate Moldy credentials, memory, generated files, share links, Agent API keys, and audit logs safely.
+---
+
+Moldy security depends on keeping user-owned resources, operator-only settings, public share links, Agent API keys, long-term memory, and generated files separate. This page explains where data can persist and what to review before sharing.
+
+For the access-control baseline, see [Access and oversight](/hancom/moldy/en/access-oversight).
+
+## Data surfaces
+
+| Surface | Data that can persist or appear | Principle |
+| --- | --- | --- |
+| Conversation messages | User input, model response, tool result | Check agent and share scope before entering sensitive data |
+| Tool calls | Input JSON, external API result, error | Ensure credential values do not appear in results |
+| Memory | Long-term user or agent information | Review proposals before saving |
+| Generated files | Documents, tables, images, code, logs | Inspect preview and download before sharing |
+| Share links | Read-only snapshot and shared files | Review all messages and files before public access |
+| Agent API | Server-side key, deployment, run metadata | Limit key scope and deployments |
+| Audit logs | Credential changes, Agent API key changes, operator actions | Track changes without secret values |
+
+## Credentials
+
+Credential responses do not return decrypted secret values. User credentials are managed in user scope, while system credentials are operator-scoped.
+
+| Practice | Reason |
+| --- | --- |
+| Keep credential name/description secret-free | Safe to show in UI captures and audit logs |
+| Check that test results do not echo secrets | Prevent leaks through tool results or error cards |
+| Separate user and system credentials | Keep Builder/System LLM separate from user agent runs |
+| Review credential audit logs | Track who changed what and when |
+
+## Memory
+
+Memory improves future conversations but persists information. Review memory proposals before approving them.
+
+| Safer to remember | Do not remember |
+| --- | --- |
+| Preferred answer format | Passwords, API keys, tokens |
+| Public long-term work context | National IDs, customer identifiers |
+| Durable project name and role | One-time secret requests |
+| Settings the user explicitly wants remembered | Data that policy forbids storing |
+
+## Generated files and artifacts
+
+Generated files can be downloaded and shared more easily than messages. DOCX, PPTX, XLSX, PDF, HTML, and images can also contain more hidden detail than the visible chat answer.
+
+Before sharing:
+
+1. Open the file preview.
+2. Check tables, images, headers/footers, speaker notes, and hidden sheets.
+3. Confirm source tool call and run ID.
+4. Confirm whether the file is included in public share.
+5. Delete or separate files before sharing when needed.
+
+## Share links
+
+Share links are unauthenticated public read-only access. Anyone with the link can view the shared snapshot and included artifacts.
+
+| Situation | Recommended action |
+| --- | --- |
+| Internal review | Remove sensitive files and share a short conversation |
+| External customer sharing | Review messages, tool results, and artifact previews |
+| Shared by mistake | Revoke the share immediately |
+| Share link returns 404 | Token may be revoked or unknown |
+
+## Agent API keys
+
+Agent API keys are not browser keys. Store them only in server-side secret storage and never in public client code, screenshots, docs examples, or chat transcripts.
+
+| Setting | Recommendation |
+| --- | --- |
+| Scope | Grant only required scopes |
+| Deployment | Prefer selected deployments where possible |
+| Expiry | Set an expiration matching the integration |
+| Rotation | Revoke immediately when exposure is suspected |
+| Logging | Log key name, prefix/last four, deployment public ID, and run ID only |
+
+## Docs and screenshots
+
+Documentation work must not publish:
+
+- Real cookies, CSRF tokens, API keys, or credential secrets.
+- Real emails, user names, customer names, or internal URLs.
+- Sensitive body text in generated files.
+- Private model base URLs or internal system paths.
+
+After recapturing screenshots, run `pnpm run check:sensitive` and visually inspect new screens.
+

@@ -1,0 +1,180 @@
+---
+title: API Cookbook
+description: Call Moldy REST API and Agent API endpoints with practical curl examples.
+---
+
+The API Cookbook gives concrete call flows before you dig into individual OpenAPI schemas. Browser-app `/api/*` endpoints use session cookies and CSRF for mutations. External `/v1/*` Agent API runtime endpoints use server-side Agent API keys.
+
+Use [API reference](/hancom/moldy/en/api-reference) and the [endpoint index](/hancom/moldy/en/api-endpoints) for exact endpoint and schema details.
+
+<Warning>
+Do not share real passwords, cookies, CSRF tokens, or Agent API keys in docs, screenshots, chat transcripts, or issue reports.
+</Warning>
+
+## Common variables
+
+```bash
+export MOLDY_BASE_URL="https://your-moldy-host.example"
+export MOLDY_EMAIL="user@example.com"
+export MOLDY_PASSWORD="replace-with-your-password"
+```
+
+For local development, set `MOLDY_BASE_URL` to the actual backend origin, not the frontend origin.
+
+## Log in and store CSRF
+
+`POST /api/auth/login` sets HttpOnly session cookies and returns `csrf_token` in the response body.
+
+```bash
+curl -sS -c cookies.txt \
+  -H "Content-Type: application/json" \
+  -X POST "$MOLDY_BASE_URL/api/auth/login" \
+  -d "{\"email\":\"$MOLDY_EMAIL\",\"password\":\"$MOLDY_PASSWORD\"}" \
+  | tee login.json
+
+export CSRF_TOKEN="$(node -e "console.log(require('./login.json').csrf_token)")"
+```
+
+Send the cookie jar and `X-CSRF-Token` for state-changing requests.
+
+```bash
+curl -sS -b cookies.txt \
+  -H "X-CSRF-Token: $CSRF_TOKEN" \
+  "$MOLDY_BASE_URL/api/auth/me"
+```
+
+## Create a conversation and send a message
+
+Conversation creation follows the `ConversationCreate` schema. `title` is optional.
+
+```bash
+export AGENT_ID="00000000-0000-0000-0000-000000000000"
+
+curl -sS -b cookies.txt \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: $CSRF_TOKEN" \
+  -X POST "$MOLDY_BASE_URL/api/agents/$AGENT_ID/conversations" \
+  -d '{"title":"API cookbook test"}' \
+  | tee conversation.json
+
+export CONVERSATION_ID="$(node -e "const v=require('./conversation.json'); console.log(v.id || v.conversation_id)")"
+```
+
+Message sending follows the `MessageCreate` schema. The response can be an SSE stream, so terminal output may continue as chunks arrive.
+
+```bash
+curl -N -b cookies.txt \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: $CSRF_TOKEN" \
+  -X POST "$MOLDY_BASE_URL/api/conversations/$CONVERSATION_ID/messages" \
+  -d '{"content":"Summarize what this agent can do in three sentences."}'
+```
+
+## Reconnect a stream and resume
+
+If a stream disconnects, use the run id kept by the client to check the reconnect path.
+
+```bash
+export RUN_ID="run-id-from-client-or-response"
+
+curl -N -b cookies.txt \
+  "$MOLDY_BASE_URL/api/conversations/$CONVERSATION_ID/stream?run_id=$RUN_ID"
+```
+
+For approval or interrupt resume, `ResumeRequest` sends a `decisions` array. The decision shape depends on the card, so inspect the UI card and OpenAPI schema together.
+
+```bash
+curl -N -b cookies.txt \
+  -H "Content-Type: application/json" \
+  -H "X-CSRF-Token: $CSRF_TOKEN" \
+  -X POST "$MOLDY_BASE_URL/api/conversations/$CONVERSATION_ID/messages/resume" \
+  -d '{"decisions":[]}'
+```
+
+## List and download artifacts
+
+```bash
+curl -sS -b cookies.txt \
+  "$MOLDY_BASE_URL/api/artifacts?limit=20"
+
+export ARTIFACT_ID="00000000-0000-0000-0000-000000000000"
+
+curl -L -b cookies.txt \
+  "$MOLDY_BASE_URL/api/artifacts/$ARTIFACT_ID/download" \
+  -o artifact-download.bin
+```
+
+To list only files for one conversation:
+
+```bash
+curl -sS -b cookies.txt \
+  "$MOLDY_BASE_URL/api/conversations/$CONVERSATION_ID/artifacts"
+```
+
+## Create and revoke a share link
+
+Share links create unauthenticated read-only snapshots. Review content before creating one.
+
+```bash
+curl -sS -b cookies.txt \
+  -H "X-CSRF-Token: $CSRF_TOKEN" \
+  -X POST "$MOLDY_BASE_URL/api/conversations/$CONVERSATION_ID/share"
+
+curl -sS -b cookies.txt \
+  -H "X-CSRF-Token: $CSRF_TOKEN" \
+  -X DELETE "$MOLDY_BASE_URL/api/conversations/$CONVERSATION_ID/share"
+```
+
+## Call the Agent API runtime
+
+Agent API uses server-side API keys, not browser cookies. Create keys in **Settings > Agent API** and store them in secret storage.
+
+```bash
+export MOLDY_AGENT_API_KEY="moldy-agent-api-key"
+export DEPLOYMENT_PUBLIC_ID="agent-public-id"
+
+curl -sS \
+  -H "Authorization: Bearer $MOLDY_AGENT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST "$MOLDY_BASE_URL/v1/runs/wait" \
+  -d '{
+    "agent_id": "'"$DEPLOYMENT_PUBLIC_ID"'",
+    "input": {
+      "messages": [
+        {"role": "user", "content": "Summarize my priorities for today."}
+      ]
+    },
+    "metadata": {"source": "api-cookbook"}
+  }'
+```
+
+If the key has stream scope, call `/v1/runs/stream`.
+
+```bash
+curl -N \
+  -H "Authorization: Bearer $MOLDY_AGENT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -X POST "$MOLDY_BASE_URL/v1/runs/stream" \
+  -d '{
+    "agent_id": "'"$DEPLOYMENT_PUBLIC_ID"'",
+    "input": {
+      "messages": [
+        {"role": "user", "content": "Show progress as you work."}
+      ]
+    },
+    "stream_mode": ["updates"]
+  }'
+```
+
+## Fast failure triage
+
+| Symptom | Check first |
+| --- | --- |
+| `401` | Expired cookie, missing Agent API key, revoked key |
+| `403` | CSRF mismatch, missing `super_user`, missing key scope |
+| `404` | Other user's resource, revoked share token, wrong public ID |
+| Stream disconnect | Run id, reconnect path, trace |
+| Artifact download fails | Artifact status, owner permission, storage object |
+
+See the [error reference](/hancom/moldy/en/error-reference) for detailed classification.
+

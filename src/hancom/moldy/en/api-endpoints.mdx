@@ -1,0 +1,435 @@
+---
+title: Backend API endpoint list
+description: A grouped list of every Moldy backend REST endpoint from the OpenAPI snapshot.
+---
+
+This page is generated from `src/openapi/moldy-openapi.json`, which is saved from the running Moldy backend's `/openapi.json`. The current snapshot contains 205 endpoints.
+
+<Info>
+Use the API Reference tab for request and response schemas. This page is a quick index of the full API surface.
+</Info>
+
+## How to read this list
+
+- Most `/api/*` endpoints require a logged-in session. State-changing browser requests also send a CSRF header.
+- `/api/auth/login`, `/api/auth/register`, `/api/auth/refresh`, `/api/health`, and public share reads can be called without an active app session.
+- Operator-only APIs map to operator UI areas such as system credentials, System LLM, and marketplace moderation.
+
+## Group summary
+
+| Group | Endpoints | Description |
+| --- | ---: | --- |
+| `auth` (Authentication) | 9 | Registration, login, logout, refresh, current-user session, profile, and avatar image management |
+| `audit` (Activity log) | 1 | User and operator activity logs with outcome, target, request, and run filters |
+| `agent-api` (Agent API control plane) | 7 | Deployment candidates, deployment state, and server-side API key management for external agent calls |
+| `agent-runtime-api` (Agent API runtime) | 11 | /v1 run, stream, thread, and compatibility endpoints for deployed agents called with API keys |
+| `agents` (Agents) | 9 | Agent CRUD, summary lists, favorites, and agent image generation/readback |
+| `builder` (Conversational builder) | 6 | Conversational build sessions, messages, resume, confirm, and builder images |
+| `conversations` (Conversations) | 18 | Conversation rooms, paginated lists, first-message start, messages, SSE streaming, resume/edit/regenerate, traces, and files |
+| `artifacts` (File artifacts) | 12 | Conversation-generated file lookup/delete/download plus the full file library, favorites, recent files, and stats |
+| `assistant` (Fix agent) | 1 | Messages sent from the Fix panel in agent settings |
+| `tools` (Tools) | 8 | Tool type catalog, user tool CRUD, and tool execution |
+| `mcp` (MCP servers) | 14 | MCP registry, server CRUD/test/discovery, import/export, and discovered MCP tools |
+| `skills` (Skills) | 17 | Text/package skills, files, credential requirements, and bindings |
+| `credentials` (Credentials) | 18 | User/system credentials, credential types, testing, audit logs, and OAuth2 flows |
+| `models` (Models) | 7 | Model catalog CRUD, registered model tests, and unsaved preview tests |
+| `memory` (Memory) | 13 | User and agent memory policy, saved memory CRUD, and memory proposal approval/edit/rejection |
+| `system-llm-settings` (System LLM) | 2 | Operator-managed System LLM settings for builder, Fix, and image roles |
+| `middlewares` (Middleware) | 1 | Middleware registry entries that can be attached to agents |
+| `triggers` (Schedules) | 10 | Agent trigger CRUD, global trigger listing, run-now, run history, and summary |
+| `usage` (Usage) | 3 | Usage summaries and daily spend by user, agent, or model |
+| `marketplace` (Marketplace) | 17 | Marketplace listing/detail, install, update, publish, ACL, enable/disable, and admin listing controls |
+| `shares` (Share links) | 9 | Conversation share link create/read/revoke plus public shared message and file artifact reads |
+| `templates` (Templates) | 2 | Agent creation template list and detail reads |
+| `uploads` (Uploads) | 2 | Attachment uploads and uploaded file reads |
+| `health` (Health checks) | 4 | MCP server and model health checks, history, and immediate checks |
+| `feedback` (Feedback) | 3 | Message feedback upsert/delete and conversation-level feedback reads |
+| `untagged` (Other) | 1 | Untagged base health endpoint |
+
+## Authentication
+
+Registration, login, logout, refresh, current-user session, profile, and avatar image management.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/auth/login` | Login Endpoint |
+| `POST` | `/api/auth/logout` | Logout Endpoint |
+| `GET` | `/api/auth/me` | Me Endpoint |
+| `GET` | `/api/auth/me/avatar-image` | Get Avatar Image Endpoint |
+| `POST` | `/api/auth/me/avatar-image` | Upload Avatar Image Endpoint |
+| `DELETE` | `/api/auth/me/avatar-image` | Delete Avatar Image Endpoint |
+| `PATCH` | `/api/auth/me/profile` | Update Profile Endpoint |
+| `POST` | `/api/auth/refresh` | Refresh Endpoint |
+| `POST` | `/api/auth/register` | Register Endpoint |
+
+## Activity log
+
+User and operator activity logs with outcome, target, request, and run filters.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/audit-events` | List Audit Events |
+
+## Agent API control plane
+
+Deployment candidates, deployment state, and server-side API key management for external agent calls.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agent-api/deployment-candidates` | List Deployment Candidates |
+| `GET` | `/api/agent-api/deployments` | List Deployments |
+| `POST` | `/api/agent-api/deployments` | Create Deployment |
+| `PATCH` | `/api/agent-api/deployments/{deployment_id}` | Update Deployment |
+| `GET` | `/api/agent-api/keys` | List Api Keys |
+| `POST` | `/api/agent-api/keys` | Create Api Key |
+| `POST` | `/api/agent-api/keys/{api_key_id}/revoke` | Revoke Api Key |
+
+## Agent API runtime
+
+/v1 run, stream, thread, and compatibility endpoints for deployed agents called with API keys.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/agents` | List Public Agents |
+| `POST` | `/v1/agents/{public_id}/chat-messages` | Dify Chat Messages |
+| `POST` | `/v1/chat/completions` | Openai Chat Completions |
+| `GET` | `/v1/health` | Public Health |
+| `POST` | `/v1/runs/stream` | Run Stream |
+| `POST` | `/v1/runs/wait` | Run Wait |
+| `POST` | `/v1/threads` | Create Thread |
+| `GET` | `/v1/threads/{thread_id}` | Get Thread |
+| `POST` | `/v1/threads/{thread_id}/runs/stream` | Thread Run Stream |
+| `POST` | `/v1/threads/{thread_id}/runs/wait` | Thread Run Wait |
+| `POST` | `/v1/workflows/run` | Dify Workflow Run |
+
+## Agents
+
+Agent CRUD, summary lists, favorites, and agent image generation/readback.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents` | List Agents |
+| `POST` | `/api/agents` | Create Agent |
+| `GET` | `/api/agents/{agent_id}` | Get Agent |
+| `PUT` | `/api/agents/{agent_id}` | Update Agent |
+| `DELETE` | `/api/agents/{agent_id}` | Delete Agent |
+| `PATCH` | `/api/agents/{agent_id}/favorite` | Toggle Favorite |
+| `GET` | `/api/agents/{agent_id}/image` | Get Agent Image |
+| `POST` | `/api/agents/{agent_id}/image` | Generate Agent Image |
+| `GET` | `/api/agents/summary` | List Agent Summaries |
+
+## Conversational builder
+
+Conversational build sessions, messages, resume, confirm, and builder images.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/builder` | Start Build |
+| `GET` | `/api/builder/{session_id}` | Get Build Session |
+| `POST` | `/api/builder/{session_id}/confirm` | Confirm Build |
+| `GET` | `/api/builder/{session_id}/image/{filename}` | Serve Builder Image |
+| `POST` | `/api/builder/{session_id}/messages` | Post Message |
+| `POST` | `/api/builder/{session_id}/messages/resume` | Resume Message |
+
+## Conversations
+
+Conversation rooms, paginated lists, first-message start, messages, SSE streaming, resume/edit/regenerate, traces, and files.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents/{agent_id}/conversations` | List Conversations |
+| `POST` | `/api/agents/{agent_id}/conversations` | Create Conversation |
+| `GET` | `/api/agents/{agent_id}/conversations/page` | List Conversations Page |
+| `POST` | `/api/agents/{agent_id}/conversations/start` | Start Conversation With Message |
+| `PATCH` | `/api/conversations/{conversation_id}` | Update Conversation |
+| `DELETE` | `/api/conversations/{conversation_id}` | Delete Conversation |
+| `GET` | `/api/conversations/{conversation_id}/debug/traces` | List Debug Traces |
+| `GET` | `/api/conversations/{conversation_id}/debug/traces/{trace_id}` | Get Debug Trace Detail |
+| `GET` | `/api/conversations/{conversation_id}/files/{file_path}` | Get Conversation File |
+| `GET` | `/api/conversations/{conversation_id}/messages` | List Messages |
+| `POST` | `/api/conversations/{conversation_id}/messages` | Send Message |
+| `POST` | `/api/conversations/{conversation_id}/messages/edit` | Edit Message |
+| `POST` | `/api/conversations/{conversation_id}/messages/regenerate` | Regenerate Message |
+| `POST` | `/api/conversations/{conversation_id}/messages/resume` | Resume Message |
+| `POST` | `/api/conversations/{conversation_id}/messages/switch-branch` | Switch Branch |
+| `POST` | `/api/conversations/{conversation_id}/read` | Mark Conversation Read |
+| `GET` | `/api/conversations/{conversation_id}/stream` | Stream Resume |
+| `GET` | `/api/conversations/{conversation_id}/traces` | List Traces |
+
+## File artifacts
+
+Conversation-generated file lookup/delete/download plus the full file library, favorites, recent files, and stats.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/artifacts` | List Artifact Library |
+| `PATCH` | `/api/artifacts/{artifact_id}` | Update Artifact |
+| `GET` | `/api/artifacts/{artifact_id}/content` | Get Artifact Library Content |
+| `GET` | `/api/artifacts/{artifact_id}/download` | Download Artifact Library Item |
+| `POST` | `/api/artifacts/{artifact_id}/opened` | Record Artifact Opened |
+| `GET` | `/api/artifacts/recent` | List Recent Artifacts |
+| `GET` | `/api/artifacts/stats` | Get Artifact Library Stats |
+| `GET` | `/api/conversations/{conversation_id}/artifacts` | List Conversation Artifacts |
+| `GET` | `/api/conversations/{conversation_id}/artifacts/{artifact_id}` | Get Conversation Artifact |
+| `DELETE` | `/api/conversations/{conversation_id}/artifacts/{artifact_id}` | Delete Conversation Artifact |
+| `GET` | `/api/conversations/{conversation_id}/artifacts/{artifact_id}/content` | Get Conversation Artifact Content |
+| `GET` | `/api/conversations/{conversation_id}/artifacts/{artifact_id}/download` | Download Conversation Artifact |
+
+## Fix agent
+
+Messages sent from the Fix panel in agent settings.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/agents/{agent_id}/assistant/message` | Send Assistant Message |
+
+## Tools
+
+Tool type catalog, user tool CRUD, and tool execution.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/tool-types` | List Tool Types |
+| `GET` | `/api/tool-types/{key}` | Get Tool Type |
+| `GET` | `/api/tools` | List Tools |
+| `POST` | `/api/tools` | Create Tool |
+| `GET` | `/api/tools/{tool_id}` | Get Tool |
+| `PATCH` | `/api/tools/{tool_id}` | Update Tool |
+| `DELETE` | `/api/tools/{tool_id}` | Delete Tool |
+| `POST` | `/api/tools/{tool_id}/run` | Run Tool Endpoint |
+
+## MCP servers
+
+MCP registry, server CRUD/test/discovery, import/export, and discovered MCP tools.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/mcp-server-types` | List Registry Entries |
+| `GET` | `/api/mcp-server-types/{key}` | Get Registry Entry |
+| `GET` | `/api/mcp-servers` | List Servers |
+| `POST` | `/api/mcp-servers` | Create Server |
+| `GET` | `/api/mcp-servers/{server_id}` | Get Server |
+| `PATCH` | `/api/mcp-servers/{server_id}` | Update Server |
+| `DELETE` | `/api/mcp-servers/{server_id}` | Delete Server |
+| `POST` | `/api/mcp-servers/{server_id}/discover` | Discover Server Tools |
+| `POST` | `/api/mcp-servers/{server_id}/test` | Test Server |
+| `GET` | `/api/mcp-servers/all-tools` | List All User Mcp Tools |
+| `GET` | `/api/mcp-servers/export` | Export Servers |
+| `POST` | `/api/mcp-servers/from-registry` | Create Server From Registry |
+| `POST` | `/api/mcp-servers/import` | Import Servers |
+| `POST` | `/api/mcp-servers/probe` | Probe Mcp Server |
+
+## Skills
+
+Text/package skills, files, credential requirements, and bindings.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/skills` | List Skills |
+| `POST` | `/api/skills` | Create Text Skill |
+| `GET` | `/api/skills/{skill_id}` | Get Skill |
+| `PATCH` | `/api/skills/{skill_id}` | Patch Skill Metadata |
+| `DELETE` | `/api/skills/{skill_id}` | Delete Skill |
+| `GET` | `/api/skills/{skill_id}/content` | Get Text Content |
+| `PUT` | `/api/skills/{skill_id}/content` | Put Text Content |
+| `GET` | `/api/skills/{skill_id}/credential-bindings` | List Skill Credential Bindings |
+| `PUT` | `/api/skills/{skill_id}/credential-bindings/{requirement_key}` | Put Skill Credential Binding |
+| `DELETE` | `/api/skills/{skill_id}/credential-bindings/{requirement_key}` | Delete Skill Credential Binding |
+| `GET` | `/api/skills/{skill_id}/credential-requirements` | Get Skill Credential Requirements |
+| `GET` | `/api/skills/{skill_id}/files` | List Skill Files |
+| `POST` | `/api/skills/{skill_id}/files` | Upload Skill File |
+| `GET` | `/api/skills/{skill_id}/files/{file_path}` | Get Skill File |
+| `PUT` | `/api/skills/{skill_id}/files/{file_path}` | Put Skill File |
+| `DELETE` | `/api/skills/{skill_id}/files/{file_path}` | Delete Skill File |
+| `POST` | `/api/skills/upload` | Upload Package Skill |
+
+## Credentials
+
+User/system credentials, credential types, testing, audit logs, and OAuth2 flows.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/credential-types` | List Credential Types |
+| `GET` | `/api/credential-types/{key}` | Get Credential Type |
+| `GET` | `/api/credentials` | List Credentials |
+| `POST` | `/api/credentials` | Create Credential |
+| `GET` | `/api/credentials/{credential_id}` | Get Credential |
+| `PATCH` | `/api/credentials/{credential_id}` | Update Credential |
+| `DELETE` | `/api/credentials/{credential_id}` | Delete Credential |
+| `GET` | `/api/credentials/{credential_id}/audit-logs` | List Audit Logs |
+| `POST` | `/api/credentials/{credential_id}/discover-models` | Discover Models |
+| `POST` | `/api/credentials/{credential_id}/test` | Test Credential |
+| `POST` | `/api/credentials/preview-test` | Preview Test |
+| `POST` | `/api/oauth2-credential/auth/{credential_id}` | Oauth2 Auth Start |
+| `GET` | `/api/oauth2-credential/callback` | Oauth2 Callback |
+| `GET` | `/api/system-credentials` | List System Credentials |
+| `POST` | `/api/system-credentials` | Create System Credential |
+| `GET` | `/api/system-credentials/{credential_id}` | Get System Credential |
+| `PATCH` | `/api/system-credentials/{credential_id}` | Update System Credential |
+| `DELETE` | `/api/system-credentials/{credential_id}` | Delete System Credential |
+
+## Models
+
+Model catalog CRUD, registered model tests, and unsaved preview tests.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/models` | List Models |
+| `POST` | `/api/models` | Create Model |
+| `GET` | `/api/models/{model_id}` | Get Model |
+| `PATCH` | `/api/models/{model_id}` | Update Model |
+| `DELETE` | `/api/models/{model_id}` | Delete Model |
+| `POST` | `/api/models/{model_id}/test` | Test Registered Model |
+| `POST` | `/api/models/test-preview` | Test Preview Model |
+
+## Memory
+
+User and agent memory policy, saved memory CRUD, and memory proposal approval/edit/rejection.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents/{agent_id}/memory-settings` | Get Agent Memory Settings |
+| `PATCH` | `/api/agents/{agent_id}/memory-settings` | Update Agent Memory Settings |
+| `GET` | `/api/me/memory-settings` | Get User Memory Settings |
+| `PATCH` | `/api/me/memory-settings` | Update User Memory Settings |
+| `GET` | `/api/memories` | List Memories |
+| `POST` | `/api/memories` | Create Memory |
+| `PATCH` | `/api/memories/{memory_id}` | Update Memory |
+| `DELETE` | `/api/memories/{memory_id}` | Delete Memory |
+| `POST` | `/api/memory-proposals` | Create Memory Proposal |
+| `GET` | `/api/memory-proposals/{proposal_id}` | Get Memory Proposal |
+| `POST` | `/api/memory-proposals/{proposal_id}/approve` | Approve Memory Proposal |
+| `POST` | `/api/memory-proposals/{proposal_id}/edit-and-approve` | Edit And Approve Memory Proposal |
+| `POST` | `/api/memory-proposals/{proposal_id}/reject` | Reject Memory Proposal |
+
+## System LLM
+
+Operator-managed System LLM settings for builder, Fix, and image roles.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/system-llm-settings` | List System Llm Settings |
+| `PUT` | `/api/system-llm-settings/{role}` | Update System Llm Setting |
+
+## Middleware
+
+Middleware registry entries that can be attached to agents.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/middlewares` | List Middlewares |
+
+## Schedules
+
+Agent trigger CRUD, global trigger listing, run-now, run history, and summary.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents/{agent_id}/triggers` | List Agent Triggers |
+| `POST` | `/api/agents/{agent_id}/triggers` | Create Trigger |
+| `PUT` | `/api/agents/{agent_id}/triggers/{trigger_id}` | Update Agent Trigger |
+| `DELETE` | `/api/agents/{agent_id}/triggers/{trigger_id}` | Delete Agent Trigger |
+| `GET` | `/api/triggers` | List All Triggers |
+| `PATCH` | `/api/triggers/{trigger_id}` | Update Trigger Global |
+| `DELETE` | `/api/triggers/{trigger_id}` | Delete Trigger Global |
+| `POST` | `/api/triggers/{trigger_id}/run-now` | Run Trigger Now |
+| `GET` | `/api/triggers/{trigger_id}/runs` | List Trigger Runs |
+| `GET` | `/api/triggers/summary` | Trigger Summary |
+
+## Usage
+
+Usage summaries and daily spend by user, agent, or model.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents/{agent_id}/usage` | Get Agent Usage |
+| `GET` | `/api/usage/daily` | Get Daily Spend |
+| `GET` | `/api/usage/summary` | Get Usage Summary |
+
+## Marketplace
+
+Marketplace listing/detail, install, update, publish, ACL, enable/disable, and admin listing controls.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/marketplace/admin/items/{item_id}/listed` | Admin Set Item Listed |
+| `POST` | `/api/marketplace/admin/k-skill/sync` | Admin K Skill Sync Status |
+| `DELETE` | `/api/marketplace/installations/{installation_id}` | Delete Installation |
+| `POST` | `/api/marketplace/installations/{installation_id}/update` | Update Installation |
+| `GET` | `/api/marketplace/items` | List Items |
+| `GET` | `/api/marketplace/items/{item_id}` | Get Item |
+| `PATCH` | `/api/marketplace/items/{item_id}` | Patch Item |
+| `POST` | `/api/marketplace/items/{item_id}/acl` | Replace Item Acl |
+| `DELETE` | `/api/marketplace/items/{item_id}/acl/{user_id_to_remove}` | Delete Item Acl Entry |
+| `POST` | `/api/marketplace/items/{item_id}/disable` | Disable Item |
+| `POST` | `/api/marketplace/items/{item_id}/enable` | Enable Item |
+| `POST` | `/api/marketplace/items/{item_id}/install` | Install Item |
+| `GET` | `/api/marketplace/items/{item_id}/versions` | List Versions |
+| `POST` | `/api/marketplace/items/{item_id}/versions/from-skill/{skill_id}` | Publish New Version |
+| `POST` | `/api/marketplace/items/from-skill/{skill_id}` | Publish Item From Skill |
+| `GET` | `/api/marketplace/items/page` | List Items Page |
+| `GET` | `/api/marketplace/versions/{version_id}` | Get Version |
+
+## Share links
+
+Conversation share link create/read/revoke plus public shared message and file artifact reads.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/conversations/{conversation_id}/share` | Get Active Share |
+| `POST` | `/api/conversations/{conversation_id}/share` | Create Share |
+| `DELETE` | `/api/conversations/{conversation_id}/share` | Revoke Share |
+| `GET` | `/api/shares/{share_token}` | Get Public Share |
+| `GET` | `/api/shares/{share_token}/artifacts` | List Public Share Artifacts |
+| `GET` | `/api/shares/{share_token}/artifacts/{artifact_id}` | Get Public Share Artifact |
+| `GET` | `/api/shares/{share_token}/artifacts/{artifact_id}/content` | Get Public Share Artifact Content |
+| `GET` | `/api/shares/{share_token}/artifacts/{artifact_id}/download` | Download Public Share Artifact |
+| `GET` | `/api/shares/{share_token}/messages` | Get Public Share Messages |
+
+## Templates
+
+Agent creation template list and detail reads.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/templates` | List Templates |
+| `GET` | `/api/templates/{template_id}` | Get Template |
+
+## Uploads
+
+Attachment uploads and uploaded file reads.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/uploads` | Create Upload |
+| `GET` | `/api/uploads/{upload_id}` | Get Upload |
+
+## Health checks
+
+MCP server and model health checks, history, and immediate checks.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/health/check` | Check Now |
+| `GET` | `/api/health/history` | Get History |
+| `GET` | `/api/health/mcp-servers` | List Mcp Health |
+| `GET` | `/api/health/models` | List Model Health |
+
+## Feedback
+
+Message feedback upsert/delete and conversation-level feedback reads.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/conversations/{conversation_id}/feedback` | List Feedback For Conversation |
+| `POST` | `/api/messages/{message_id}/feedback` | Upsert Feedback |
+| `DELETE` | `/api/messages/{message_id}/feedback` | Clear Feedback |
+
+## Other
+
+Untagged base health endpoint.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/health` | Health Check |
+

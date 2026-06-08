@@ -1,0 +1,166 @@
+---
+title: Files and artifacts
+description: Use the Moldy file library to preview, favorite, download, and trace files generated during agent conversations.
+---
+
+Moldy records files generated during agent runs as artifacts. Files can appear inside a conversation, in public share views when shared, and in the Files resource page for the current user.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/settings-artifacts.png" alt="Moldy Files page showing artifact filters, library list, preview panel, and recent files" />
+
+## What is captured
+
+An artifact stores the file path, display name, MIME type, extension, kind, size, hash, status, source tool call, run ID, conversation, agent, current version, preview URL, and download URL.
+
+Supported artifact kinds are `image`, `video`, `audio`, `pdf`, `markdown`, `html`, `code`, `document`, `data`, `cad`, and `other`.
+
+| Status | Meaning |
+| --- | --- |
+| `writing` | The file is being collected or updated |
+| `ready` | The file is available for preview/download |
+| `deleted` | The file was deleted from the conversation view |
+| `failed` | Collection or storage failed |
+
+## Supported file types and viewers
+
+Moldy chooses an artifact preview provider from the artifact kind, extension, and MIME type. The same file can be opened from a conversation artifact card, the right artifact panel, or the **Settings > Files** library. Unsupported formats fall back to a download card.
+
+For a detailed file-type matrix covering preview, download, and sharing behavior, see the [Artifact viewer matrix](/hancom/moldy/en/artifact-viewers).
+
+### Real viewer examples by format
+
+The images below are captured from the actual Moldy artifact preview providers. Different artifact formats open through different UI providers, including media players, embedded PDF, sandboxed HTML, the Markdown renderer, table viewers, document viewers, and fallback download cards.
+
+**Image viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-image.png" alt="Moldy image artifact viewer" />
+
+**Audio viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-audio.png" alt="Moldy audio artifact viewer" />
+
+**Video viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-video.png" alt="Moldy video artifact viewer" />
+
+**PDF viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-pdf.png" alt="Moldy PDF artifact viewer" />
+
+**HTML viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-html.png" alt="Moldy HTML artifact viewer" />
+
+**Markdown viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-markdown.png" alt="Moldy Markdown artifact viewer" />
+
+**Mermaid viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-mermaid.png" alt="Moldy Mermaid artifact viewer" />
+
+**CSV/TSV table viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-csv.png" alt="Moldy CSV artifact viewer" />
+
+**JSON viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-json.png" alt="Moldy JSON artifact viewer" />
+
+**YAML/TOML viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-yaml.png" alt="Moldy YAML artifact viewer" />
+
+**Code viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-code.png" alt="Moldy code artifact viewer" />
+
+**Text/log viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-text.png" alt="Moldy text artifact viewer" />
+
+**DOCX viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-docx.png" alt="Moldy DOCX artifact viewer" />
+
+**XLS/XLSX viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-xlsx.png" alt="Moldy XLSX artifact viewer" />
+
+**PPTX viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-pptx.png" alt="Moldy PPTX artifact viewer" />
+
+**HWP/HWPX viewer**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-hwpx.png" alt="Moldy HWPX artifact viewer" />
+
+**Fallback download**
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-fallback.png" alt="Moldy fallback artifact download card" />
+
+| File/content | Examples | Viewer behavior |
+| --- | --- | --- |
+| Images | `png`, `jpg`, `jpeg`, `webp`, `image/*` | Inline preview and expanded image view |
+| Audio/video | `audio/*`, `video/*`, `mp3`, `mp4` | Browser media player |
+| PDF | `pdf`, `application/pdf` | Embedded PDF preview |
+| HTML | `html`, `htm`, `text/html` | Sandboxed iframe render |
+| Markdown | `md`, `markdown`, `text/markdown` | Chat Markdown renderer |
+| Mermaid | `mmd`, `mermaid` | Mermaid diagram render |
+| Code | artifact kind `code` | Code preview and source view |
+| Plain text | `txt`, `log`, `text/*` | Text preview with line breaks preserved |
+| Table data | `csv`, `tsv` | Row/column table preview |
+| JSON | `json`, `application/json` | Structured JSON preview |
+| YAML/TOML | `yaml`, `yml`, `toml` | Structured key/value tree preview |
+| Hangul documents | `hwp`, `hwpx` | HWP/HWPX document preview |
+| Word documents | `docx` | DOCX document preview |
+| Excel documents | `xls`, `xlsx` | Sheet/table preview |
+| PowerPoint documents | `pptx` | Slide preview |
+| Other/CAD | `cad`, `dwg`, unknown MIME types | Fallback card and download |
+
+When document-generation skills or file tools create DOCX, XLSX, PPTX, or HWPX output, users can open the artifact from chat, inspect the generated content, and later find the same file in the Files library for favorite, preview, or download actions. Previews open the current version, so check the version number and update time when a file has been regenerated.
+
+## Use the file library
+
+1. Open **Settings > Files**.
+2. Review total count, total size, favorite count, kind breakdown, and recent count.
+3. Filter by search text, agent, conversation ID, kind, or favorite state.
+4. Select a file to preview it.
+5. Mark important files as favorites or download the current version.
+
+The top-level `/artifacts` route shows the same file library in the main app layout. The settings route is the preferred menu location.
+
+## Conversation artifacts
+
+Conversation messages can include artifact cards when a tool creates or updates files. The conversation API also exposes per-conversation artifact endpoints so the UI can list, preview, download, and delete artifacts that belong to that conversation.
+
+The conversation view is best for checking files produced by the latest run, while the Files library is better for comparing files across conversations and agents. The same artifact carries execution context in chat and search/filter/favorite/statistics controls in the library.
+
+When investigating a file, keep the run ID, tool call ID, source tool name, conversation ID, and version number together. They explain which execution produced the file and whether the user is looking at the current version.
+
+## Public shares
+
+Share links can expose shared conversation messages and share-readable artifacts. Review generated files before creating or distributing a share link.
+
+<Warning>
+Generated files can contain sensitive conversation content. Do not share a conversation until you have reviewed the messages, tool results, and file previews.
+</Warning>
+
+## Storage and limits
+
+The backend supports local artifact storage in the current implementation. Configuration includes artifact storage backend, storage directory, maximum artifact bytes, maximum files per run, and text preview byte limits. S3 configuration fields exist, but the current storage service raises an unavailable error for S3.
+
+## Failure checks
+
+| Symptom | Check |
+| --- | --- |
+| File is missing from library | Confirm the run produced an artifact and the user owns the conversation |
+| Preview is empty | Check MIME type, text preview support, file size, and artifact status |
+| Download fails | Confirm the artifact is `ready` and the storage object still exists |
+| Public share cannot open a file | Confirm the share token is active and the artifact belongs to the shared conversation |
+
+## Related APIs
+
+- `/api/artifacts`, `/api/artifacts/stats`, `/api/artifacts/recent`
+- `/api/artifacts/{artifact_id}/content`, `/api/artifacts/{artifact_id}/download`
+- `/api/conversations/{conversation_id}/artifacts`
+- `/api/shares/{share_token}/artifacts`

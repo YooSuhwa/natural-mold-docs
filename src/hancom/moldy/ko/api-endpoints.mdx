@@ -1,0 +1,435 @@
+---
+title: 백엔드 API 전체 목록
+description: Moldy 백엔드 OpenAPI 스냅샷 기준으로 전체 REST endpoint를 그룹별로 정리합니다.
+---
+
+이 문서는 실행 중인 Moldy 백엔드의 `/openapi.json`에서 저장한 `src/openapi/moldy-openapi.json`를 기준으로 생성했습니다. 현재 스냅샷에는 205개의 endpoint가 있습니다.
+
+<Info>
+스키마, request body, response body의 상세 필드는 API Reference 탭의 OpenAPI 뷰에서 확인하세요. 이 페이지는 전체 API 표면을 빠르게 훑기 위한 색인입니다.
+</Info>
+
+## 읽는 법
+
+- 대부분의 `/api/*` endpoint는 로그인 세션이 필요합니다. 상태를 변경하는 요청은 브라우저 앱 기준 CSRF 헤더도 함께 보냅니다.
+- `/api/auth/login`, `/api/auth/register`, `/api/auth/refresh`, `/api/health`, 공개 공유 링크 조회 endpoint는 세션이 없을 때도 호출될 수 있습니다.
+- 운영자 전용 기능은 시스템 자격증명, 시스템 LLM, 마켓플레이스 운영자 관리처럼 UI에서도 운영자 메뉴로 노출되는 영역입니다.
+
+## 그룹 요약
+
+| Group | Endpoints | Description |
+| --- | ---: | --- |
+| `auth` (인증) | 9 | 회원가입, 로그인, 로그아웃, refresh, 현재 사용자 세션, 프로필, 아바타 이미지 관리 |
+| `audit` (활동 기록) | 1 | 내 활동과 운영자 전체 활동 기록 조회, 결과/대상/request/run 기준 필터링 |
+| `agent-api` (Agent API 관리) | 7 | 외부 호출용 에이전트 배포 후보, 배포 상태, 서버용 API 키 생성/조회/폐기 |
+| `agent-runtime-api` (Agent API 런타임) | 11 | 배포된 에이전트를 API 키로 호출하는 /v1 실행, 스트리밍, thread, 호환 endpoint |
+| `agents` (에이전트) | 9 | 에이전트 CRUD, 요약 목록, 즐겨찾기, 에이전트 이미지 생성과 조회 |
+| `builder` (대화형 빌더) | 6 | 대화형 에이전트 생성 세션, 메시지, resume, confirm, 빌더 이미지 조회 |
+| `conversations` (대화) | 18 | 대화방, paginated 목록, 첫 메시지 시작, 메시지, SSE 스트리밍, resume/edit/regenerate, trace와 파일 조회 |
+| `artifacts` (파일 아티팩트) | 12 | 대화 실행으로 생성된 파일의 대화별 조회/삭제/download와 전체 파일 라이브러리, 즐겨찾기, 최근 파일, 통계 |
+| `assistant` (Fix 에이전트) | 1 | 에이전트 설정 화면의 Fix 패널 메시지 전송 |
+| `tools` (도구) | 8 | 도구 타입 카탈로그, 사용자 도구 CRUD, 도구 실행 |
+| `mcp` (MCP 서버) | 14 | MCP registry, 서버 등록/수정/테스트/탐색, import/export, 발견된 MCP 도구 |
+| `skills` (스킬) | 17 | 텍스트/패키지 스킬, 파일, credential requirement와 binding 관리 |
+| `credentials` (자격증명) | 18 | 사용자/시스템 자격증명, credential type, 테스트, audit log, OAuth2 연결 |
+| `models` (모델) | 7 | 모델 카탈로그 CRUD, 등록 모델 테스트, 미저장 모델 preview test |
+| `memory` (메모리) | 13 | 사용자/에이전트 메모리 정책, 저장된 메모리 CRUD, 메모리 제안 승인/수정 승인/거절 |
+| `system-llm-settings` (시스템 LLM) | 2 | 운영자용 빌더/Fix/image 역할별 시스템 LLM 설정 |
+| `middlewares` (미들웨어) | 1 | 에이전트에 연결할 수 있는 미들웨어 registry 조회 |
+| `triggers` (스케줄) | 10 | 에이전트 트리거 CRUD, 전체 트리거 조회, run-now, 실행 이력, 요약 |
+| `usage` (사용량) | 3 | 사용자/에이전트/모델 기준 사용량 요약과 일별 비용 조회 |
+| `marketplace` (마켓플레이스) | 17 | 마켓플레이스 목록/상세, 설치, 업데이트, 게시, ACL, enable/disable, 운영자 listed 관리 |
+| `shares` (공유 링크) | 9 | 대화 공유 링크 생성/조회/폐기, 공개 공유 메시지와 공유 파일 아티팩트 조회 |
+| `templates` (템플릿) | 2 | 에이전트 생성 템플릿 목록과 상세 조회 |
+| `uploads` (업로드) | 2 | 첨부 파일 업로드와 업로드 파일 조회 |
+| `health` (상태 점검) | 4 | MCP 서버와 모델 상태 점검, 이력 조회, 즉시 점검 |
+| `feedback` (피드백) | 3 | 메시지 피드백 생성/갱신/삭제와 대화별 피드백 조회 |
+| `untagged` (기타) | 1 | 태그가 없는 기본 health endpoint |
+
+## 인증
+
+회원가입, 로그인, 로그아웃, refresh, 현재 사용자 세션, 프로필, 아바타 이미지 관리입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/auth/login` | 로그인 |
+| `POST` | `/api/auth/logout` | 로그아웃 |
+| `GET` | `/api/auth/me` | 현재 사용자 세션 조회 |
+| `GET` | `/api/auth/me/avatar-image` | 아바타 이미지 조회 |
+| `POST` | `/api/auth/me/avatar-image` | 아바타 이미지 업로드 |
+| `DELETE` | `/api/auth/me/avatar-image` | 아바타 이미지 삭제 |
+| `PATCH` | `/api/auth/me/profile` | 프로필 업데이트 |
+| `POST` | `/api/auth/refresh` | 세션 refresh |
+| `POST` | `/api/auth/register` | 회원가입 |
+
+## 활동 기록
+
+내 활동과 운영자 전체 활동 기록 조회, 결과/대상/request/run 기준 필터링입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/audit-events` | 활동 기록 목록 조회 |
+
+## Agent API 관리
+
+외부 호출용 에이전트 배포 후보, 배포 상태, 서버용 API 키 생성/조회/폐기입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agent-api/deployment-candidates` | 배포 후보 목록 조회 |
+| `GET` | `/api/agent-api/deployments` | 배포 목록 조회 |
+| `POST` | `/api/agent-api/deployments` | 에이전트 API 배포 생성 |
+| `PATCH` | `/api/agent-api/deployments/{deployment_id}` | 에이전트 API 배포 업데이트 |
+| `GET` | `/api/agent-api/keys` | API 키 목록 조회 |
+| `POST` | `/api/agent-api/keys` | API 키 생성 |
+| `POST` | `/api/agent-api/keys/{api_key_id}/revoke` | API 키 폐기 |
+
+## Agent API 런타임
+
+배포된 에이전트를 API 키로 호출하는 /v1 실행, 스트리밍, thread, 호환 endpoint입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/v1/agents` | API 키가 호출 가능한 배포 에이전트 목록 조회 |
+| `POST` | `/v1/agents/{public_id}/chat-messages` | 호환 채팅 메시지 실행 |
+| `POST` | `/v1/chat/completions` | 호환 chat completions 실행 |
+| `GET` | `/v1/health` | 공개 런타임 health 확인 |
+| `POST` | `/v1/runs/stream` | 스트리밍 실행 |
+| `POST` | `/v1/runs/wait` | 대기 실행 |
+| `POST` | `/v1/threads` | thread 생성 |
+| `GET` | `/v1/threads/{thread_id}` | thread 조회 |
+| `POST` | `/v1/threads/{thread_id}/runs/stream` | thread 스트리밍 실행 |
+| `POST` | `/v1/threads/{thread_id}/runs/wait` | thread 대기 실행 |
+| `POST` | `/v1/workflows/run` | 호환 workflow 실행 |
+
+## 에이전트
+
+에이전트 CRUD, 요약 목록, 즐겨찾기, 에이전트 이미지 생성과 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents` | 에이전트 목록 조회 |
+| `POST` | `/api/agents` | 에이전트 생성 |
+| `GET` | `/api/agents/{agent_id}` | 에이전트 조회 |
+| `PUT` | `/api/agents/{agent_id}` | 에이전트 업데이트 |
+| `DELETE` | `/api/agents/{agent_id}` | 에이전트 삭제 |
+| `PATCH` | `/api/agents/{agent_id}/favorite` | Favorite 전환 |
+| `GET` | `/api/agents/{agent_id}/image` | 에이전트 이미지 조회 |
+| `POST` | `/api/agents/{agent_id}/image` | 에이전트 이미지 생성 |
+| `GET` | `/api/agents/summary` | 에이전트 요약 목록 조회 |
+
+## 대화형 빌더
+
+대화형 에이전트 생성 세션, 메시지, resume, confirm, 빌더 이미지 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/builder` | 대화형 빌더 세션 시작 |
+| `GET` | `/api/builder/{session_id}` | 빌더 세션 조회 |
+| `POST` | `/api/builder/{session_id}/confirm` | 빌더 결과 확정 |
+| `GET` | `/api/builder/{session_id}/image/{filename}` | 빌더 이미지 제공 |
+| `POST` | `/api/builder/{session_id}/messages` | 빌더 메시지 전송 |
+| `POST` | `/api/builder/{session_id}/messages/resume` | 중단된 메시지 실행 재개 |
+
+## 대화
+
+대화방, paginated 목록, 첫 메시지 시작, 메시지, SSE 스트리밍, resume/edit/regenerate, trace와 파일 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents/{agent_id}/conversations` | 대화 목록 조회 |
+| `POST` | `/api/agents/{agent_id}/conversations` | 대화 생성 |
+| `GET` | `/api/agents/{agent_id}/conversations/page` | 대화 페이지 목록 조회 |
+| `POST` | `/api/agents/{agent_id}/conversations/start` | 첫 메시지로 대화 시작 |
+| `PATCH` | `/api/conversations/{conversation_id}` | 대화 업데이트 |
+| `DELETE` | `/api/conversations/{conversation_id}` | 대화 삭제 |
+| `GET` | `/api/conversations/{conversation_id}/debug/traces` | 디버그 trace 목록 조회 |
+| `GET` | `/api/conversations/{conversation_id}/debug/traces/{trace_id}` | 디버그 trace 상세 조회 |
+| `GET` | `/api/conversations/{conversation_id}/files/{file_path}` | 대화 파일 조회 |
+| `GET` | `/api/conversations/{conversation_id}/messages` | 메시지 목록 조회 |
+| `POST` | `/api/conversations/{conversation_id}/messages` | 메시지 전송 |
+| `POST` | `/api/conversations/{conversation_id}/messages/edit` | 메시지 수정 후 재실행 |
+| `POST` | `/api/conversations/{conversation_id}/messages/regenerate` | 메시지 재생성 |
+| `POST` | `/api/conversations/{conversation_id}/messages/resume` | 중단된 메시지 실행 재개 |
+| `POST` | `/api/conversations/{conversation_id}/messages/switch-branch` | 대화 branch 전환 |
+| `POST` | `/api/conversations/{conversation_id}/read` | 대화 읽음 처리 |
+| `GET` | `/api/conversations/{conversation_id}/stream` | SSE 스트림 재개 |
+| `GET` | `/api/conversations/{conversation_id}/traces` | trace 목록 조회 |
+
+## 파일 아티팩트
+
+대화 실행으로 생성된 파일의 대화별 조회/삭제/download와 전체 파일 라이브러리, 즐겨찾기, 최근 파일, 통계입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/artifacts` | 파일 라이브러리 목록 조회 |
+| `PATCH` | `/api/artifacts/{artifact_id}` | Artifact 업데이트 |
+| `GET` | `/api/artifacts/{artifact_id}/content` | 파일 라이브러리 콘텐츠 조회 |
+| `GET` | `/api/artifacts/{artifact_id}/download` | 파일 라이브러리 항목 다운로드 |
+| `POST` | `/api/artifacts/{artifact_id}/opened` | 파일 열람 기록 |
+| `GET` | `/api/artifacts/recent` | 최근 파일 목록 조회 |
+| `GET` | `/api/artifacts/stats` | 파일 라이브러리 통계 조회 |
+| `GET` | `/api/conversations/{conversation_id}/artifacts` | 대화 파일 목록 조회 |
+| `GET` | `/api/conversations/{conversation_id}/artifacts/{artifact_id}` | 대화 파일 조회 |
+| `DELETE` | `/api/conversations/{conversation_id}/artifacts/{artifact_id}` | 대화 파일 삭제 |
+| `GET` | `/api/conversations/{conversation_id}/artifacts/{artifact_id}/content` | 대화 파일 콘텐츠 조회 |
+| `GET` | `/api/conversations/{conversation_id}/artifacts/{artifact_id}/download` | 대화 파일 다운로드 |
+
+## Fix 에이전트
+
+에이전트 설정 화면의 Fix 패널 메시지 전송입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/agents/{agent_id}/assistant/message` | Fix 에이전트 메시지 전송 |
+
+## 도구
+
+도구 타입 카탈로그, 사용자 도구 CRUD, 도구 실행입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/tool-types` | 도구 타입 목록 조회 |
+| `GET` | `/api/tool-types/{key}` | 도구 타입 조회 |
+| `GET` | `/api/tools` | 도구 목록 조회 |
+| `POST` | `/api/tools` | 도구 생성 |
+| `GET` | `/api/tools/{tool_id}` | 도구 조회 |
+| `PATCH` | `/api/tools/{tool_id}` | 도구 업데이트 |
+| `DELETE` | `/api/tools/{tool_id}` | 도구 삭제 |
+| `POST` | `/api/tools/{tool_id}/run` | 도구 실행 |
+
+## MCP 서버
+
+MCP registry, 서버 등록/수정/테스트/탐색, import/export, 발견된 MCP 도구입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/mcp-server-types` | registry 항목 목록 조회 |
+| `GET` | `/api/mcp-server-types/{key}` | registry 항목 조회 |
+| `GET` | `/api/mcp-servers` | MCP 서버 목록 조회 |
+| `POST` | `/api/mcp-servers` | MCP 서버 생성 |
+| `GET` | `/api/mcp-servers/{server_id}` | MCP 서버 조회 |
+| `PATCH` | `/api/mcp-servers/{server_id}` | MCP 서버 업데이트 |
+| `DELETE` | `/api/mcp-servers/{server_id}` | MCP 서버 삭제 |
+| `POST` | `/api/mcp-servers/{server_id}/discover` | MCP 서버 도구 탐색 |
+| `POST` | `/api/mcp-servers/{server_id}/test` | MCP 서버 테스트 |
+| `GET` | `/api/mcp-servers/all-tools` | 사용자 MCP 도구 전체 목록 조회 |
+| `GET` | `/api/mcp-servers/export` | MCP 서버 내보내기 |
+| `POST` | `/api/mcp-servers/from-registry` | registry 항목으로 MCP 서버 생성 |
+| `POST` | `/api/mcp-servers/import` | MCP 서버 가져오기 |
+| `POST` | `/api/mcp-servers/probe` | MCP 서버 저장 전 probe |
+
+## 스킬
+
+텍스트/패키지 스킬, 파일, credential requirement와 binding 관리입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/skills` | 스킬 목록 조회 |
+| `POST` | `/api/skills` | 텍스트 스킬 생성 |
+| `GET` | `/api/skills/{skill_id}` | 스킬 조회 |
+| `PATCH` | `/api/skills/{skill_id}` | 스킬 메타데이터 일부 수정 |
+| `DELETE` | `/api/skills/{skill_id}` | 스킬 삭제 |
+| `GET` | `/api/skills/{skill_id}/content` | 텍스트 콘텐츠 조회 |
+| `PUT` | `/api/skills/{skill_id}/content` | 텍스트 스킬 본문 저장 |
+| `GET` | `/api/skills/{skill_id}/credential-bindings` | 스킬 자격증명 binding 목록 조회 |
+| `PUT` | `/api/skills/{skill_id}/credential-bindings/{requirement_key}` | 스킬 자격증명 binding 저장 |
+| `DELETE` | `/api/skills/{skill_id}/credential-bindings/{requirement_key}` | 스킬 자격증명 binding 삭제 |
+| `GET` | `/api/skills/{skill_id}/credential-requirements` | 스킬 자격증명 requirement 조회 |
+| `GET` | `/api/skills/{skill_id}/files` | 스킬 파일 목록 조회 |
+| `POST` | `/api/skills/{skill_id}/files` | 스킬 파일 업로드 |
+| `GET` | `/api/skills/{skill_id}/files/{file_path}` | 스킬 파일 조회 |
+| `PUT` | `/api/skills/{skill_id}/files/{file_path}` | 스킬 파일 저장 |
+| `DELETE` | `/api/skills/{skill_id}/files/{file_path}` | 스킬 파일 삭제 |
+| `POST` | `/api/skills/upload` | 패키지 스킬 업로드 |
+
+## 자격증명
+
+사용자/시스템 자격증명, credential type, 테스트, audit log, OAuth2 연결입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/credential-types` | 자격증명 타입 목록 조회 |
+| `GET` | `/api/credential-types/{key}` | 자격증명 타입 조회 |
+| `GET` | `/api/credentials` | 자격증명 목록 조회 |
+| `POST` | `/api/credentials` | 자격증명 생성 |
+| `GET` | `/api/credentials/{credential_id}` | 자격증명 조회 |
+| `PATCH` | `/api/credentials/{credential_id}` | 자격증명 업데이트 |
+| `DELETE` | `/api/credentials/{credential_id}` | 자격증명 삭제 |
+| `GET` | `/api/credentials/{credential_id}/audit-logs` | audit log 목록 조회 |
+| `POST` | `/api/credentials/{credential_id}/discover-models` | 모델 탐색 |
+| `POST` | `/api/credentials/{credential_id}/test` | 자격증명 테스트 |
+| `POST` | `/api/credentials/preview-test` | 저장 전 자격증명 테스트 |
+| `POST` | `/api/oauth2-credential/auth/{credential_id}` | OAuth2 인증 시작 |
+| `GET` | `/api/oauth2-credential/callback` | OAuth2 callback 처리 |
+| `GET` | `/api/system-credentials` | 시스템 자격증명 목록 조회 |
+| `POST` | `/api/system-credentials` | 시스템 자격증명 생성 |
+| `GET` | `/api/system-credentials/{credential_id}` | 시스템 자격증명 조회 |
+| `PATCH` | `/api/system-credentials/{credential_id}` | 시스템 자격증명 업데이트 |
+| `DELETE` | `/api/system-credentials/{credential_id}` | 시스템 자격증명 삭제 |
+
+## 모델
+
+모델 카탈로그 CRUD, 등록 모델 테스트, 미저장 모델 preview test입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/models` | 모델 목록 조회 |
+| `POST` | `/api/models` | 모델 생성 |
+| `GET` | `/api/models/{model_id}` | 모델 조회 |
+| `PATCH` | `/api/models/{model_id}` | 모델 업데이트 |
+| `DELETE` | `/api/models/{model_id}` | 모델 삭제 |
+| `POST` | `/api/models/{model_id}/test` | 등록 모델 테스트 |
+| `POST` | `/api/models/test-preview` | 저장 전 모델 테스트 |
+
+## 메모리
+
+사용자/에이전트 메모리 정책, 저장된 메모리 CRUD, 메모리 제안 승인/수정 승인/거절입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents/{agent_id}/memory-settings` | 에이전트 메모리 설정 조회 |
+| `PATCH` | `/api/agents/{agent_id}/memory-settings` | 에이전트 메모리 설정 업데이트 |
+| `GET` | `/api/me/memory-settings` | 사용자 메모리 설정 조회 |
+| `PATCH` | `/api/me/memory-settings` | 사용자 메모리 설정 업데이트 |
+| `GET` | `/api/memories` | 메모리 목록 조회 |
+| `POST` | `/api/memories` | 메모리 생성 |
+| `PATCH` | `/api/memories/{memory_id}` | 메모리 업데이트 |
+| `DELETE` | `/api/memories/{memory_id}` | 메모리 삭제 |
+| `POST` | `/api/memory-proposals` | 메모리 제안 생성 |
+| `GET` | `/api/memory-proposals/{proposal_id}` | 메모리 제안 조회 |
+| `POST` | `/api/memory-proposals/{proposal_id}/approve` | 메모리 제안 승인 |
+| `POST` | `/api/memory-proposals/{proposal_id}/edit-and-approve` | 메모리 제안 수정 후 승인 |
+| `POST` | `/api/memory-proposals/{proposal_id}/reject` | 메모리 제안 거절 |
+
+## 시스템 LLM
+
+운영자용 빌더/Fix/image 역할별 시스템 LLM 설정입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/system-llm-settings` | 시스템 LLM 설정 목록 조회 |
+| `PUT` | `/api/system-llm-settings/{role}` | 시스템 LLM 설정 업데이트 |
+
+## 미들웨어
+
+에이전트에 연결할 수 있는 미들웨어 registry 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/middlewares` | 미들웨어 목록 조회 |
+
+## 스케줄
+
+에이전트 트리거 CRUD, 전체 트리거 조회, run-now, 실행 이력, 요약입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents/{agent_id}/triggers` | 에이전트 트리거 목록 조회 |
+| `POST` | `/api/agents/{agent_id}/triggers` | 트리거 생성 |
+| `PUT` | `/api/agents/{agent_id}/triggers/{trigger_id}` | 에이전트 트리거 업데이트 |
+| `DELETE` | `/api/agents/{agent_id}/triggers/{trigger_id}` | 에이전트 트리거 삭제 |
+| `GET` | `/api/triggers` | 전체 트리거 목록 조회 |
+| `PATCH` | `/api/triggers/{trigger_id}` | 전역 트리거 업데이트 |
+| `DELETE` | `/api/triggers/{trigger_id}` | 전역 트리거 삭제 |
+| `POST` | `/api/triggers/{trigger_id}/run-now` | 트리거 즉시 실행 |
+| `GET` | `/api/triggers/{trigger_id}/runs` | 트리거 실행 이력 목록 조회 |
+| `GET` | `/api/triggers/summary` | 트리거 요약 |
+
+## 사용량
+
+사용자/에이전트/모델 기준 사용량 요약과 일별 비용 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/agents/{agent_id}/usage` | 에이전트 사용량 조회 |
+| `GET` | `/api/usage/daily` | 일별 비용 조회 |
+| `GET` | `/api/usage/summary` | 사용량 요약 조회 |
+
+## 마켓플레이스
+
+마켓플레이스 목록/상세, 설치, 업데이트, 게시, ACL, enable/disable, 운영자 listed 관리입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/marketplace/admin/items/{item_id}/listed` | 운영자 listed 상태 변경 |
+| `POST` | `/api/marketplace/admin/k-skill/sync` | 운영자 K-Skill 동기화 상태 갱신 |
+| `DELETE` | `/api/marketplace/installations/{installation_id}` | 설치 삭제 |
+| `POST` | `/api/marketplace/installations/{installation_id}/update` | 설치 항목 업데이트 |
+| `GET` | `/api/marketplace/items` | 마켓플레이스 항목 목록 조회 |
+| `GET` | `/api/marketplace/items/{item_id}` | 마켓플레이스 항목 조회 |
+| `PATCH` | `/api/marketplace/items/{item_id}` | 마켓플레이스 항목 일부 수정 |
+| `POST` | `/api/marketplace/items/{item_id}/acl` | 항목 ACL 교체 |
+| `DELETE` | `/api/marketplace/items/{item_id}/acl/{user_id_to_remove}` | 항목 ACL 항목 삭제 |
+| `POST` | `/api/marketplace/items/{item_id}/disable` | 마켓플레이스 항목 비활성화 |
+| `POST` | `/api/marketplace/items/{item_id}/enable` | 마켓플레이스 항목 활성화 |
+| `POST` | `/api/marketplace/items/{item_id}/install` | 마켓플레이스 항목 설치 |
+| `GET` | `/api/marketplace/items/{item_id}/versions` | 버전 목록 조회 |
+| `POST` | `/api/marketplace/items/{item_id}/versions/from-skill/{skill_id}` | 스킬에서 새 버전 게시 |
+| `POST` | `/api/marketplace/items/from-skill/{skill_id}` | 스킬에서 마켓플레이스 항목 게시 |
+| `GET` | `/api/marketplace/items/page` | Items Page 목록 조회 |
+| `GET` | `/api/marketplace/versions/{version_id}` | 버전 조회 |
+
+## 공유 링크
+
+대화 공유 링크 생성/조회/폐기, 공개 공유 메시지와 공유 파일 아티팩트 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/conversations/{conversation_id}/share` | 활성 공유 링크 조회 |
+| `POST` | `/api/conversations/{conversation_id}/share` | Share 생성 |
+| `DELETE` | `/api/conversations/{conversation_id}/share` | Share 폐기 |
+| `GET` | `/api/shares/{share_token}` | 공개 공유 링크 조회 |
+| `GET` | `/api/shares/{share_token}/artifacts` | 공개 공유 파일 목록 조회 |
+| `GET` | `/api/shares/{share_token}/artifacts/{artifact_id}` | 공개 공유 파일 조회 |
+| `GET` | `/api/shares/{share_token}/artifacts/{artifact_id}/content` | 공개 공유 파일 콘텐츠 조회 |
+| `GET` | `/api/shares/{share_token}/artifacts/{artifact_id}/download` | 공개 공유 파일 다운로드 |
+| `GET` | `/api/shares/{share_token}/messages` | 공개 공유 메시지 조회 |
+
+## 템플릿
+
+에이전트 생성 템플릿 목록과 상세 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/templates` | 템플릿 목록 조회 |
+| `GET` | `/api/templates/{template_id}` | 템플릿 조회 |
+
+## 업로드
+
+첨부 파일 업로드와 업로드 파일 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/uploads` | 파일 업로드 |
+| `GET` | `/api/uploads/{upload_id}` | 업로드 파일 조회 |
+
+## 상태 점검
+
+MCP 서버와 모델 상태 점검, 이력 조회, 즉시 점검입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `POST` | `/api/health/check` | 상태 즉시 점검 |
+| `GET` | `/api/health/history` | 상태 점검 이력 조회 |
+| `GET` | `/api/health/mcp-servers` | MCP 상태 목록 조회 |
+| `GET` | `/api/health/models` | 모델 상태 목록 조회 |
+
+## 피드백
+
+메시지 피드백 생성/갱신/삭제와 대화별 피드백 조회입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/conversations/{conversation_id}/feedback` | 대화 피드백 목록 조회 |
+| `POST` | `/api/messages/{message_id}/feedback` | 피드백 생성 또는 갱신 |
+| `DELETE` | `/api/messages/{message_id}/feedback` | 피드백 삭제 |
+
+## 기타
+
+태그가 없는 기본 health endpoint입니다.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/api/health` | 기본 health 확인 |
+

@@ -1,0 +1,12 @@
+services:
+  docs:
+    image: docs-mold:dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${DOCS_PORT:-3002}:3001"
+    environment:
+      PORT: "3001"
+    volumes:
+      - ./src:/app/src

@@ -1,0 +1,60 @@
+---
+title: Manage skills
+description: Create Moldy skills, manage files, and bind required credentials.
+---
+
+Skills are reusable knowledge and file bundles that help agents perform specialized work. A skill can carry instructions, text content, files, package assets, and credential requirements that are attached to an agent.
+
+Moldy supports skill creation, upload, file management, content editing, credential requirements, and credential binding APIs. Use this page to decide when to create a skill instead of adding more agent instructions or registering another tool.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/skills.png" alt="Moldy skills management screen" />
+
+## What skills do
+
+Skills are different from tools. Tools execute actions. Skills provide knowledge, instructions, files, or packages an agent can use.
+
+| Item | Skill | Tool |
+| --- | --- | --- |
+| Purpose | Provide knowledge, instructions, and files | Execute an external action |
+| Agent attachment | Skill picker in agent settings | Tool or MCP tool picker in agent settings |
+| Credentials | Bind to declared skill requirements | Required by the tool or MCP server |
+| Marketplace | Can be published as a skill package | Usually included through skill or MCP resources |
+
+## Create or upload a skill
+
+Moldy exposes both direct skill creation and package upload paths. Upload and publish flows run a secret scan to block potential secrets in packages.
+
+1. Open **Skills** and create a new skill.
+2. Enter the name and description.
+3. Add text content or files.
+4. Define credential requirements when needed.
+5. Attach the skill in agent settings.
+
+## Manage files
+
+Skills support file list, file read, file create/update, and file delete APIs. This lets Moldy manage multi-file knowledge packages, not just short text snippets.
+
+File-backed skills are useful when the agent needs stable reference material. Keep files focused, remove stale content, and update the skill before publishing a new marketplace version.
+
+<Tip>
+Do not put real API keys, account information, or internal URLs in skill files. Marketplace publish flows also scan for secrets.
+</Tip>
+
+## Credential requirements and bindings
+
+A skill can declare the credentials it needs. Users bind their own credentials to those requirement keys.
+
+| Flow | Description |
+| --- | --- |
+| Read requirements | See which credential definition a skill expects |
+| List bindings | See current user credential bindings |
+| Save binding | Connect a requirement key to a user credential |
+| Delete binding | Remove an unused binding |
+
+The server validates that users cannot bind another user's credential or a system credential by mistake.
+
+## Use skills in agents
+
+When you attach a skill in agent settings, the chat runtime includes that skill information in the agent configuration. The chat page displays attached skills, and the agent can use them when relevant.
+
+An attached skill does not replace model selection, credential setup, or tool attachment. Validate a skill with a test chat so you can confirm the agent reads the intended knowledge and asks for the expected credentials when needed.

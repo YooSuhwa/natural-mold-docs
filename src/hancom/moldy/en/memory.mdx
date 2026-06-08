@@ -1,0 +1,78 @@
+---
+title: Manage memory
+description: Configure Moldy long-term memory policies, saved memory records, agent overrides, and memory proposal handling.
+---
+
+Memory lets Moldy agents reuse user-approved facts across conversations. It is controlled at two levels: a user-wide memory policy in Settings, and optional per-agent overrides in agent settings.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/settings-memory.png" alt="Moldy memory settings screen showing policy controls and recorded memories" />
+
+## When to use memory
+
+Use memory when an agent should remember stable preferences, recurring facts, or agent-specific context. Do not use memory for one-time instructions, secrets, API keys, private documents, or facts that should expire quickly.
+
+| Scope | Meaning | Example |
+| --- | --- | --- |
+| User | Available as a user preference across agents | Preferred language, reporting format, time preference |
+| Agent | Available only for one agent | A support agent's standard customer summary fields |
+
+## Global memory policy
+
+The user policy is stored through `/api/me/memory-settings`.
+
+| Setting | Supported values | Effect |
+| --- | --- | --- |
+| Enable memory | on/off | Turns memory read and write behavior on or off |
+| Use memory in responses | on/off | Includes active memory in the runtime prompt |
+| Conversation writes | `off`, `ask`, `auto` | Controls whether conversations can save memory |
+| Allowed scopes | `user`, `agent`, `both` | Restricts where memory records may be stored |
+| Trigger writes | `off`, `auto` | Controls whether scheduled runs can write memory |
+
+The safest production default is to keep writes on `ask` until users understand what will be stored. Use `auto` only when the agent's domain and privacy boundary are clear.
+
+## Add, edit, and delete records
+
+1. Open **Settings > Memory**.
+2. Choose **User** or **Agent** scope.
+3. Enter focused memory content.
+4. Add an optional reason so future reviewers know why the record exists.
+5. Save, then check the recorded memory list.
+
+Saved memory records have status, timestamps, source conversation/run fields when available, and a store path such as user profile memory or agent memory. Deleted memory is not used by the runtime.
+
+## Agent overrides
+
+Agent settings can override the user policy with:
+
+| Override | Values | Use it when |
+| --- | --- | --- |
+| Memory policy | `inherit`, `off`, `ask`, `auto` | One agent needs stricter or more permissive write behavior |
+| Scope policy | `inherit`, `agent_only`, `user_and_agent` | One agent should avoid writing user-wide memory |
+| Trigger policy | `inherit`, `off`, `auto` | Scheduled runs need separate memory behavior |
+
+Agent overrides are useful for sensitive agents. If an agent handles temporary or private content, set writes to `off` or require confirmation.
+
+## Memory proposals
+
+When write policy is `ask`, the runtime can create a proposal instead of saving immediately. The proposal can be approved, edited and approved, or rejected. Proposal content is validated with the same length and non-empty rules as direct memory records.
+
+<Warning>
+Memory is user-controlled reference material, not a place for secrets. Do not save API keys, passwords, private tokens, or confidential document text into memory.
+</Warning>
+
+## Failure checks
+
+| Symptom | Check |
+| --- | --- |
+| Agent ignores memory | Confirm memory is enabled, read is enabled, and the record scope matches the agent |
+| Memory is not saved | Check write policy, allowed scopes, and whether a proposal is waiting for approval |
+| Scheduled runs do not save memory | Check trigger write policy at both user and agent levels |
+| A memory update fails | Confirm content is not empty and is within the configured length limit |
+
+## Related APIs
+
+- `/api/me/memory-settings`
+- `/api/agents/{agent_id}/memory-settings`
+- `/api/memories`
+- `/api/memory-proposals`
+

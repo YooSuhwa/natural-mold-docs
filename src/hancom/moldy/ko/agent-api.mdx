@@ -1,0 +1,75 @@
+---
+title: Agent API
+description: Moldy 에이전트를 외부 서버에서 호출할 수 있도록 배포하고 API 키, wait, stream, thread, 호환 endpoint를 사용하는 방법을 설명합니다.
+---
+
+Agent API는 선택한 Moldy 에이전트를 서버용 API 키로 외부에서 호출할 수 있게 합니다. 관리는 **Settings > Agent API**에서 하며, `/api/agent-api/*` control-plane endpoint와 `/v1/*` runtime endpoint로 구현되어 있습니다.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/settings-agent-api.png" alt="배포 후보, API 키, 실행 endpoint를 보여주는 Moldy Agent API 설정 화면" />
+
+## 배포 모델
+
+배포 가능한 에이전트만 Agent API로 노출할 수 있습니다. 현재 UI는 API 배포에 에이전트 고정 credential 사용 방식이 필요한데 에이전트가 사용자별 credential resolution으로 설정되어 있으면 blocked 상태로 표시합니다.
+
+| 개념 | 의미 |
+| --- | --- |
+| 배포 후보 | Agent API로 호출 가능하게 만들 수 있는 사용자 소유 에이전트 |
+| 배포 | 하나의 agent에 매핑된 public ID |
+| API 키 | 생성 시 한 번만 표시되는 서버용 secret |
+| Scope | 키에 부여한 `invoke`, `stream`, `background`, `read` capability |
+
+배포에는 streaming 허용, background run 허용, 분당 rate limit, 일별 token limit을 설정할 수 있습니다. limit은 API schema상 optional field입니다.
+
+## 배포와 키 만들기
+
+1. **Settings > Agent API**를 엽니다.
+2. 배포 후보를 확인합니다.
+3. eligible 상태의 에이전트에서 **Deploy**를 클릭합니다.
+4. API 키를 만듭니다.
+5. scope와 전체 배포 호출 허용 여부 또는 특정 배포 제한을 선택합니다.
+6. 키가 표시될 때 복사합니다. Moldy는 cleartext key를 다시 보여주지 않습니다.
+7. 서버용 secret 저장소에 키를 저장하고 서버 코드에서 `/v1` endpoint를 호출합니다.
+
+<Warning>
+Agent API 키는 브라우저 키가 아닙니다. public client-side code, screenshot, docs, chat transcript에 붙여넣지 마세요.
+</Warning>
+
+## 런타임 endpoint
+
+| Endpoint | 사용처 |
+| --- | --- |
+| `POST /v1/runs/wait` | 응답을 기다리는 blocking agent run |
+| `POST /v1/runs/stream` | server-sent events 기반 streaming run |
+| `POST /v1/threads` | 배포 에이전트 대화에 대한 thread wrapper 생성 |
+| `GET /v1/threads/{thread_id}` | thread metadata 조회 |
+| `POST /v1/threads/{thread_id}/runs/wait` | 기존 thread에서 blocking run |
+| `POST /v1/threads/{thread_id}/runs/stream` | 기존 thread에서 streaming run |
+| `GET /v1/agents` | API 키가 볼 수 있는 배포 목록 |
+| `GET /v1/health` | 공개 runtime health check |
+
+chat messages, workflow run, chat completions 형태의 호환 adapter도 존재합니다. 해당 request shape을 요구하는 integration에서만 사용하세요.
+
+## 보안과 감사
+
+배포와 키 변경 같은 control-plane 작업은 audit event를 남깁니다. Runtime 호출은 브라우저 사용자 세션이 아니라 API key actor로 기록됩니다. 지원 조사에서는 API key name, deployment public ID, run ID, request metadata keys, outcome을 함께 확인하세요.
+
+키가 안전하지 않은 위치에 복사되었을 가능성이 있으면 즉시 revoke하세요. 폐기된 키도 목록에 상태로 남아 운영자가 변경 이력을 이해할 수 있습니다.
+
+## 실패 시 확인
+
+| 증상 | 확인할 항목 |
+| --- | --- |
+| 에이전트를 배포할 수 없음 | API 배포에 필요한 fixed credential path를 에이전트가 사용하는지 확인 |
+| 키 만들기 버튼이 비활성화됨 | eligible agent를 먼저 배포 |
+| `/v1/runs/stream` 실패 | 키에 `stream` scope가 있고 배포가 streaming을 허용하는지 확인 |
+| `/v1/agents`가 비어 있음 | 키가 전체 배포를 허용하는지 또는 특정 배포에만 제한되어 있는지 확인 |
+| Runtime authorization 오류 | key prefix/last four, revoked status, expiry, scope, deployment status 확인 |
+
+## 관련 API
+
+- `/api/agent-api/deployment-candidates`
+- `/api/agent-api/deployments`
+- `/api/agent-api/keys`
+- `/v1/runs/wait`, `/v1/runs/stream`
+- `/v1/threads`, `/v1/agents`
+

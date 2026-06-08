@@ -1,0 +1,80 @@
+---
+title: App settings and navigation
+description: Learn the current Moldy menu structure, settings sidebar, account controls, resource pages, and operator-only admin pages.
+---
+
+Moldy now uses two navigation contexts. The main sidebar is for building and running agents. The settings sidebar is for account preferences, API exposure, shared resources, and operator controls.
+
+Use this page when a user says a menu moved, cannot find credentials/models/schedules/usage, or needs to understand which settings are personal and which require operator permission.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/settings.png" alt="Moldy settings profile page with the settings sidebar open" />
+
+## Main sidebar
+
+| Area | What it opens | Notes |
+| --- | --- | --- |
+| New Agent | `/agents/new` | Starts the conversational, manual, or template creation flow |
+| Agent Templates | `/agents/new/template` | Template gallery for prepared agent patterns |
+| Marketplace | `/marketplace` | Catalog, install, update, publish, and item detail flows |
+| Capabilities | Tools, MCP Servers, Skills | Collapsible group for agent extension resources |
+| Recent Agents | Recent agent routes | Sorted by recent activity when available |
+| Footer controls | Theme, language, user menu | The user menu opens Settings and logout |
+
+Credentials, models, schedules, and usage are still supported through old top-level routes, but those routes now redirect to settings pages. Prefer the settings paths when writing runbooks or support steps.
+
+## Settings sidebar
+
+| Section | Pages | Who uses it |
+| --- | --- | --- |
+| Account | Profile, Memory, Security, Appearance & Language, Activity Log | Any authenticated user |
+| API | Agent API | Users who deploy fixed-identity agents for external calls |
+| Resources | Files, Credentials, Models, Schedules, Usage | Users who manage their own runtime inputs and outputs |
+| Admin | Marketplace Admin, System Credentials, System LLM Settings, All Activity | `super_user` operators |
+
+<Info>
+The Admin section appears only for users with operator permission. If a user can log in but cannot see System Credentials or System LLM Settings, check the account's `super_user` status.
+</Info>
+
+## Account settings
+
+Profile controls the name and avatar Moldy shows in chat and the user menu. Appearance & Language controls light/dark/system theme and the `ko` or `en` application locale. Security currently shows the session-based authentication status and notes that password/session controls are planned for a later product step.
+
+Activity Log shows user-scoped audit events. Operators can use All Activity to inspect audit events across users.
+
+## Resource settings
+
+Resources are the pages most users visit after creating an agent:
+
+- **Files** shows generated conversation artifacts, previews, favorites, downloads, and library stats.
+- **Credentials** stores user-scoped secrets without returning decrypted secret values.
+- **Models** registers model catalog entries, tests models, discovers models from credentials, and shows benchmark ranking data when available.
+- **Schedules** lists triggers across the user's agents and supports run-now checks.
+- **Usage** summarizes spend, token, request, and daily aggregate data from recorded model runs.
+
+## Operator settings
+
+Operators prepare shared platform behavior:
+
+- **Marketplace Admin** reviews public marketplace items and listed state.
+- **System Credentials** stores platform-owned credentials for builder, assistant, image, and other operator workflows.
+- **System LLM Settings** assigns model slots for platform workflows.
+- **All Activity** inspects audit events across users.
+
+Do not confuse operator credentials with regular chat credentials. Normal agent conversations still need a user-owned credential or another runtime-approved credential path for the selected model.
+
+## Troubleshooting
+
+| Symptom | Check |
+| --- | --- |
+| A menu is missing | Confirm whether the page moved into Settings and whether the user has operator permission |
+| Credentials page opens a different URL | `/credentials` redirects to `/settings/credentials`; document the settings URL |
+| Language does not change | Use Appearance & Language or the sidebar language control, then refresh if the locale cookie was stale |
+| Activity records are empty | Confirm the selected scope, filters, request ID, run ID, and whether the event was produced by user action or an API key |
+
+## Related APIs
+
+- `/api/auth/me`, `/api/auth/me/profile`, `/api/auth/me/avatar-image`
+- `/api/audit-events`
+- `/api/credentials`, `/api/models`, `/api/triggers`, `/api/usage/summary`
+- `/api/system-credentials`, `/api/system-llm-settings`
+

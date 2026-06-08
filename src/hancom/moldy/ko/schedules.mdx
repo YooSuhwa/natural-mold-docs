@@ -1,0 +1,73 @@
+---
+title: 스케줄
+description: Moldy에서 에이전트를 one-time, interval, cron 방식으로 예약 실행하고 결과를 추적하는 방법입니다.
+---
+
+스케줄은 에이전트를 정해진 시간 또는 반복 주기로 자동 실행하는 Moldy trigger입니다. 사용자가 매번 채팅 화면을 열지 않아도 에이전트를 실행할 수 있게 합니다.
+
+모든 에이전트의 예약 실행과 자동 응답 상태는 **스케줄** 화면에서 확인합니다. trigger 상태, 다음 실행 시각, 실패, 결과 대화, trace 링크를 확인할 때 사용하세요.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/ko/schedules.png" alt="Moldy 스케줄 목록 화면" />
+
+## 지원되는 trigger type
+
+백엔드 스키마는 다음 trigger type을 받습니다.
+
+| Type | 용도 |
+| --- | --- |
+| `one_time` | 한 번만 실행 |
+| `interval` | 일정 분 간격으로 반복 |
+| `cron` | cron expression 기준으로 반복 |
+
+스케줄에는 `timezone`, `input_message`, `conversation_policy`, `target_conversation_id`, `max_runs`, `end_at`, `auto_pause_after_failures` 같은 실행 조건을 넣을 수 있습니다.
+
+## 스케줄 생성 흐름
+
+1. 에이전트 설정의 **스케줄** 패널을 엽니다.
+2. 실행할 메시지를 작성합니다.
+3. 실행 방식을 `one_time`, `interval`, `cron` 중에서 정합니다.
+4. timezone과 종료 조건을 확인합니다.
+5. 저장 후 스케줄 목록에서 다음 실행 시각을 확인합니다.
+
+```mermaid
+flowchart LR
+  A["에이전트 설정"] --> B["스케줄 추가"]
+  B --> C["입력 메시지 작성"]
+  C --> D["시간 조건 설정"]
+  D --> E["저장"]
+  E --> F["실행 결과 대화 확인"]
+```
+
+## 실행 결과 확인
+
+스케줄 실행은 run 기록을 남깁니다. run에는 status, source, input_message, error_message, output_preview, duration, thread_id, checkpoint_id, trace_id가 포함될 수 있습니다.
+
+스케줄 화면과 에이전트 설정의 schedule 탭에서 확인할 항목은 다음과 같습니다.
+
+- active/paused/completed/error 상태
+- last run status와 last error
+- next run time
+- run count와 failure count
+- 연결된 결과 대화와 unread count
+
+## 수동 실행과 pause
+
+전역 trigger API에는 `run-now`가 있어 저장된 스케줄을 즉시 실행할 수 있습니다. 상태 값은 `active`, `paused`, `completed`, `error`를 가질 수 있으므로, 반복 실행을 잠시 멈추거나 실패한 스케줄을 조정할 때 상태를 함께 확인하세요.
+
+`run-now`는 다음 예약 시각을 기다리지 않고 스케줄을 검증할 때 유용합니다. 자격증명, 모델 설정, 도구 의존성을 바꾸는 동안에는 관련 스케줄을 pause하세요.
+
+## 실패 점검
+
+스케줄 실패는 대부분 런타임 설정 문제입니다.
+
+| 증상 | 확인할 곳 |
+| --- | --- |
+| 모델 호출 실패 | 모델, 사용자 자격증명, fallback 모델 |
+| 도구 실행 실패 | 에이전트 도구 연결, 자격증명, MCP 서버 상태 |
+| 매번 같은 지점에서 멈춤 | 승인/resume이 필요한 도구인지 확인 |
+| 결과 대화가 보이지 않음 | conversation policy와 target conversation |
+| 특정 시각에 실행되지 않음 | timezone, cron expression, end_at |
+
+<Tip>
+자동 실행 에이전트는 작은 입력 메시지로 먼저 테스트한 뒤 반복 주기를 늘리세요. 실패가 누적되면 `auto_pause_after_failures` 정책에 따라 자동 중지될 수 있습니다.
+</Tip>

@@ -1,0 +1,96 @@
+---
+title: Chat with an agent
+description: Use the Moldy agent page to manage conversations, message streaming, tool results, share links, and traces.
+---
+
+The agent page is where users run a saved Moldy agent and inspect the result. It combines chat, conversation history, draft conversations, streaming responses, tool results, generated files, memory proposals, usage metadata, share links, traces, and settings entry points.
+
+When you send a message, the backend reads the current agent configuration and streams the response with SSE. Use this page to explain the user workflow after an agent has already been created.
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-chat.png" alt="Moldy agent chat screen" />
+
+## Start a chat
+
+1. Open an agent from the dashboard or recent agents in the sidebar.
+2. Select an existing conversation or start a new one.
+3. Enter a request in the composer.
+4. Review the response, tool results, and usage information.
+5. Continue with follow-up messages in the same conversation.
+
+The first test message should be small and easy to evaluate. Confirm the response format first, then test tool calls, files, schedules, or long-running tasks.
+
+When a user clicks **New conversation**, Moldy can show a draft route before writing a new conversation row. The first sent message creates the real conversation and replaces the URL with the new conversation ID. This prevents empty conversations from accumulating when users open a draft and leave.
+
+## Message streaming
+
+Moldy responds to `POST /api/conversations/{conversation_id}/messages` with `text/event-stream`. The stream can include message chunks, tool events, errors, and message_end events.
+
+If the stream disconnects, the client can use the run-id-based stream reconnect path. See [Chat streaming API](/hancom/moldy/en/api-chat-streaming) for the endpoint flow.
+
+## Inline chat components
+
+Moldy chat renders more than plain text. Message bodies, tool calls, approvals, generated files, and memory events each use focused cards or renderers. While a message is streaming, components that need complete syntax render conservatively; after completion, Moldy switches to richer previews when possible.
+
+For a quick reference to each card, user action, and failure state, see the [Chat component gallery](/hancom/moldy/en/chat-components).
+
+| Type | What users see | When it appears |
+| --- | --- | --- |
+| Markdown body | Headings, paragraphs, lists, tables, links, blockquotes, dividers | Normal explanations and answers |
+| Code blocks | Language label, code area, syntax highlighting after completion | Code generation, logs, configuration examples |
+| Mermaid | `mermaid` code fences rendered as diagrams | Flowcharts, sequence diagrams, architecture explanations |
+| KaTeX math | Inline and display math rendering | Calculations, formulas, reasoning steps |
+| Images | Inline images, conversation image previews, click-to-expand lightbox | Generated images, uploaded images, image tool results |
+| Search result cards | Title, URL, snippet, external link | Tavily, Web, Naver Blog/News, Google Search/News |
+| File tool cards | File name, operation, and result summary | `read_file`, `write_file`, and `edit_file` calls |
+| Generic tool cards | Tool name, input, result, status, and right-panel expansion | Tool calls without a specialized UI |
+| Plan cards | Todo states and current step | `write_todos` and planning-style runs |
+| Approval cards | Approve/reject actions, editable JSON, expiration countdown | Tool approval, prompt approval, recommendation approval |
+| User input cards | Free text, single/multi-select options, multi-step question flow | `ask_user`, clarifying questions, human-in-the-loop pauses |
+| Memory cards | Proposed memory, edit, approve, reject, saved state | User and agent memory proposal/save events |
+| Sub-agent cards | Delegated agent name and run state | `task` based sub-agent execution |
+| Builder cards | Phase timeline, recommendation approvals, image choice/approval, draft config/approval | Conversational builder flows |
+
+Inline cards can reveal a more specific state than the final assistant text. For example, the answer may read normally while a tool card records a credential failure, or a memory card may still be waiting for user approval before saving.
+
+## Review tool results
+
+When a tool is called, its result appears inside the conversation. Check:
+
+- Which input the tool received
+- How the result was reflected in the response
+- Whether a failure came from credentials, MCP server health, or model tool-calling support
+- Whether the run needs approval or resume
+
+## Manage conversations
+
+Conversations are stored per agent. The conversation list shows read state, recent activity, title, and unread count. Scheduled run results can also link back to conversations.
+
+Moldy supports message edit, regenerate, branch switch, and conversation read APIs, so users can retry from a point in a long conversation or choose another response branch.
+
+Conversation history is also the evidence trail for support. When reporting an issue, include the conversation, message branch, tool result, and trace if the user has permission to view them.
+
+## Files, memory, and feedback
+
+Tool runs can create file artifacts. These files appear as conversation artifact cards, in the right artifact panel, and in [Files and artifacts](/hancom/moldy/en/files-artifacts), where users can preview, favorite, and download them.
+
+If memory is enabled, a run can use saved memory or create a memory proposal depending on the user's policy. Review memory proposals before approving them when the conversation contains sensitive information.
+
+Message feedback can be recorded and cleared through the feedback API. Use feedback together with traces, files, and token usage when evaluating response quality.
+
+## View traces
+
+Conversation traces and debug traces help inspect execution steps. Use trace pages to find the model call, tool call, or runtime step where an error happened.
+
+## Share links
+
+Share links publish a conversation snapshot as a public read-only view. Owners can create or revoke a share link, and public visitors read by share token. Shared files can also be exposed through public share artifact endpoints.
+
+<Warning>
+Share links do not require login. Review sensitive messages, files, and tool results before sharing.
+</Warning>
+
+## Open settings and visual identity
+
+<img className="moldy-screenshot" src="/images/hancom/moldy/en/agent-visual-settings.png" alt="Moldy agent visual settings screen" />
+
+To tune behavior, open [agent settings](/hancom/moldy/en/agent-settings). Visual settings control user-facing identity such as name, description, icon, and color.

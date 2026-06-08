@@ -1,0 +1,109 @@
+---
+title: 사용 시나리오와 레시피
+description: Moldy에서 자주 만드는 에이전트와 운영 흐름을 목표별 절차로 따라 합니다.
+---
+
+레시피는 기능 메뉴를 하나씩 설명하는 문서가 아니라, 사용자가 실제 목표를 끝내기 위해 어떤 화면을 어떤 순서로 열어야 하는지 보여주는 문서입니다. 에이전트 생성, 도구/MCP/스킬 연결, 채팅 검증, 파일 확인, 스케줄, Agent API 배포를 하나의 흐름으로 묶어 설명합니다.
+
+새 기능을 문서에 추가할 때는 이 페이지에도 "그 기능을 쓰면 어떤 일을 끝낼 수 있는가"를 기준으로 레시피를 보강하세요.
+
+## 레시피 선택
+
+| 목표 | 시작 위치 | 필요한 준비 | 결과 |
+| --- | --- | --- | --- |
+| 문서 분석 에이전트 | **New Agent** 또는 **Agent Templates** | 모델, 사용자 자격증명, 문서 처리 도구/스킬 | 채팅에서 요약, 비교, 체크리스트 생성 |
+| 정기 리포트 자동화 | 에이전트 설정과 **Schedules** | 안정적인 프롬프트, 모델, 필요한 도구 | 예약 실행과 결과 대화/파일 |
+| 외부 도구 연결 | **Capabilities > MCP Servers** | MCP transport, URL 또는 command, credential | 에이전트 설정에서 선택 가능한 MCP 도구 |
+| 생성 파일 검토와 공유 | 채팅 artifact card 또는 **Settings > Files** | 파일 생성 도구/스킬, 공유 전 검토 | preview, favorite, download, public share |
+| 외부 서비스에서 에이전트 호출 | **Settings > Agent API** | fixed-identity 에이전트, deployment, API key | `/v1` 런타임 호출 |
+
+## 문서 분석 에이전트 만들기
+
+이 레시피는 긴 문서, 표, 회의록, 정책 초안을 요약하고 후속 작업을 만들 에이전트를 준비하는 흐름입니다.
+
+1. **Models**와 **Credentials**에서 사용할 모델과 사용자 자격증명이 준비되었는지 확인합니다.
+2. **New Agent**에서 대화형 빌더, 템플릿, 직접 만들기 중 하나로 에이전트를 만듭니다.
+3. 에이전트 지침에 분석 범위, 출력 형식, 금지할 추측, 인용/근거 표시 방식을 적습니다.
+4. 필요한 경우 **Tools**, **MCP Servers**, **Skills**에서 문서 읽기, 검색, 파일 생성 관련 기능을 연결합니다.
+5. 작은 문서 또는 짧은 샘플로 먼저 채팅을 테스트합니다.
+6. 결과가 파일로 만들어지면 artifact card와 **Settings > Files**에서 preview와 download를 확인합니다.
+7. 공유하려면 대화와 생성 파일에 민감정보가 없는지 확인한 뒤 share link를 만듭니다.
+
+| 확인 항목 | 좋은 상태 |
+| --- | --- |
+| 모델 | 긴 문서 처리에 필요한 context와 tool calling을 지원 |
+| 지침 | 요약, 누락 위험, 다음 작업, 근거 표시 방식이 명확 |
+| 파일 | preview가 열리고 version/update time을 확인 가능 |
+| 공유 | 메시지, 도구 결과, 생성 파일을 모두 검토한 뒤 공개 |
+
+## 정기 리포트 자동화
+
+정기 리포트는 에이전트, 스케줄, 파일 artifact, 사용량 확인을 함께 봐야 합니다.
+
+1. 리포트 목적에 맞는 에이전트를 만들고 반복 실행용 지침을 작성합니다.
+2. 필요한 데이터 접근 도구, MCP 도구, 스킬을 에이전트에 연결합니다.
+3. 채팅에서 한 번 수동 실행해 결과 형식과 파일 생성 여부를 확인합니다.
+4. 에이전트 설정 또는 **Schedules**에서 one-time, interval, cron schedule을 만듭니다.
+5. timezone, `next_run_at`, `max_runs`, end condition을 확인합니다.
+6. 실행 후 대화, run history, output preview, trace id를 확인합니다.
+7. **Usage**에서 요청 수, token, 예상 비용 추이를 확인합니다.
+
+<Warning>
+스케줄은 사용자가 보지 않는 시간에도 실행될 수 있습니다. 외부 API를 호출하거나 공개 파일을 생성하는 에이전트라면 첫 며칠은 run history와 생성 파일을 자주 확인하세요.
+</Warning>
+
+## MCP 서버로 도구 확장
+
+MCP 서버는 외부 도구 묶음을 Moldy 에이전트에 붙이는 흐름입니다.
+
+1. **Capabilities > MCP Servers**를 엽니다.
+2. `streamable_http`, `sse`, `stdio` 중 transport를 선택합니다.
+3. URL 기반 transport는 URL과 header credential을, `stdio`는 command, args, env var를 입력합니다.
+4. **Probe** 또는 **Test**로 연결 상태를 확인합니다.
+5. **Discover**를 실행해 서버의 tool descriptor를 가져옵니다.
+6. 에이전트 설정에서 필요한 MCP 도구만 선택합니다.
+7. 채팅에서 작은 요청으로 도구 호출, 승인, 실패 메시지를 확인합니다.
+
+MCP 실패는 대개 URL/command, credential template, 사용자 credential 소유권, 네트워크 접근, tool calling 지원 중 하나입니다. 자세한 분류는 [오류 메시지 사전](/hancom/moldy/ko/error-reference)을 참고하세요.
+
+## 생성 파일 확인과 공유
+
+문서 생성 스킬이나 파일 도구가 DOCX, XLSX, PPTX, PDF, Markdown, HTML 같은 결과물을 만들면 사용자는 채팅 안에서 바로 열 수 있고, 나중에 **Settings > Files**에서 다시 찾을 수 있습니다.
+
+1. 채팅에서 artifact card를 엽니다.
+2. preview가 지원되는 형식인지 확인합니다.
+3. 파일이 여러 번 갱신되었다면 version과 update time을 확인합니다.
+4. 중요한 파일은 favorite으로 표시합니다.
+5. 다운로드가 필요하면 current version을 다운로드합니다.
+6. 공유 링크를 만들기 전에 메시지, 도구 결과, 파일 preview를 모두 검토합니다.
+
+| 파일 목적 | 확인할 화면 |
+| --- | --- |
+| 방금 생성된 파일 확인 | 채팅 artifact card와 오른쪽 artifact panel |
+| 여러 대화의 파일 비교 | **Settings > Files** |
+| 공개 공유 전 검토 | share preview, artifact preview, public share artifact endpoint |
+
+## Agent API로 외부 호출
+
+외부 서비스에서 Moldy 에이전트를 호출하려면 브라우저 세션 API와 Agent API를 분리해서 생각해야 합니다.
+
+1. 에이전트가 API deployment 후보인지 **Settings > Agent API**에서 확인합니다.
+2. deployment를 만들고 public ID를 확인합니다.
+3. server-side API key를 만들고 `invoke`, `stream`, `read` 같은 scope를 선택합니다.
+4. 키는 생성 직후 한 번만 보이므로 서버 secret storage에 저장합니다.
+5. `/v1/runs/wait` 또는 `/v1/runs/stream`으로 작은 요청을 먼저 보냅니다.
+6. 운영 중에는 key name, key prefix/last four, deployment public ID, run ID, trace를 함께 기록합니다.
+
+API 호출 예제는 [API Cookbook](/hancom/moldy/ko/api-cookbook)을 참고하세요.
+
+## 레시피를 문서에 추가하는 기준
+
+새 레시피는 다음 조건을 만족할 때 추가합니다.
+
+| 기준 | 설명 |
+| --- | --- |
+| 사용자가 완료할 수 있는 목표 | "설정 설명"이 아니라 "정기 리포트를 만든다"처럼 끝이 있는 작업 |
+| 화면과 API 근거 | route, OpenAPI, screenshot, source file 중 하나로 확인 |
+| 실패 경로 | 자격증명, 권한, preview, schedule, share 같은 실패 확인 항목 포함 |
+| 관련 문서 연결 | 상세 기능 문서, 오류 사전, FAQ, API 문서로 연결 |
+

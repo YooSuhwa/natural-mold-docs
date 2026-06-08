@@ -1,0 +1,111 @@
+---
+title: Releases and documentation updates
+description: Keep Moldy docs current after feature, menu, API, UI, and release changes.
+---
+
+This page explains how to keep documentation aligned with product changes. Use recent commits, menu changes, OpenAPI updates, screenshots, GEO/SEO assets, and changelog entries together so the guide does not drift away from the application.
+
+The full working-agent rules live in `AGENTS.md`; this page is the in-site user/operator summary.
+
+## When to update docs
+
+| Change | Docs action |
+| --- | --- |
+| New menu or route | Update navigation, quickstart, settings, screenshots |
+| Chat component change | Update chat guide, component gallery, error reference |
+| Artifact viewer change | Update files guide, viewer matrix, security page |
+| API router/schema change | Update OpenAPI, endpoint index, API cookbook |
+| Permission/operator change | Update access, security, FAQ, troubleshooting |
+| Schedule/Agent API change | Update recipes, API cookbook, error reference |
+| Docs structure change | Update `llms.txt`, changelog, GEO report |
+
+## Update from recent commits
+
+The product source workspace is `/Users/chester/dev/ref/natural-mold`. Do not trust commit subjects alone; inspect changed files and source.
+
+```bash
+git -C /Users/chester/dev/ref/natural-mold log --oneline --decorate -20
+git -C /Users/chester/dev/ref/natural-mold show --stat --name-only <commit>
+git -C /Users/chester/dev/ref/natural-mold show --name-status --format=fuller <commit>
+```
+
+For broad changes, inspect routes, routers, schemas, and screenshot needs.
+
+```bash
+rg -n "feature name|menu label|endpoint" /Users/chester/dev/ref/natural-mold/frontend/src /Users/chester/dev/ref/natural-mold/backend/app
+```
+
+## Refresh artifacts
+
+| Artifact | Refresh when |
+| --- | --- |
+| `src/docs.json` | Pages, menus, tabs, language structure change |
+| KO/EN MDX | User guide or reference facts change |
+| `src/openapi/moldy-openapi.json` | Backend endpoint or schema changes |
+| `api-endpoints.mdx` | OpenAPI snapshot changes |
+| `planning/feature-inventory.md` | Routes or feature coverage change |
+| Screenshots | UI labels, layout, or visible state changes |
+| Real UI reference captures | Chat component or artifact viewer screen changes |
+| `src/llms.txt` | Major docs, API, recipe, viewer, or FAQ changes |
+| Changelog | User-facing docs guidance changes |
+
+## Paired updates
+
+| Change | Check these docs too |
+| --- | --- |
+| Chat UI or inline card | Chat guide, chat component gallery, error reference |
+| File/artifact viewer | Files guide, artifact viewer matrix, security and privacy |
+| Chat/file real UI capture | `scripts/capture-ui-reference-images.mjs`, image alt text, changelog |
+| Agent API or `/v1` runtime | Agent API, API Cookbook, API reference, error reference |
+| Permission, sharing, credential | Access and oversight, security and privacy, FAQ |
+| Repeated support question | Troubleshooting, error reference, FAQ |
+| Docs structure or discovery | `src/docs.json`, `src/llms.txt`, changelog |
+
+## Verification order
+
+```bash
+pnpm run docs:check
+pnpm run check:sensitive
+```
+
+If APIs changed:
+
+```bash
+pnpm run openapi
+pnpm run api-docs
+pnpm run docs:check
+```
+
+If screens changed:
+
+```bash
+pnpm run capture
+pnpm run check:sensitive
+```
+
+If real UI captures for chat components or artifact viewers changed:
+
+```bash
+pnpm run capture:ui
+pnpm run check:sensitive
+```
+
+## Quality checks
+
+| Question | Standard |
+| --- | --- |
+| Do menu names match the UI? | Confirm with screenshot or route |
+| Does the feature exist in source? | Confirm with frontend route, backend router, OpenAPI, or test |
+| Do KO/EN pages say the same facts? | Align structure and core tables |
+| Does the user know the next action? | Include steps, failure checks, related links |
+| Can AI systems cite it easily? | Answer-first paragraph, short headings, tables, `llms.txt` |
+
+## Changelog standard
+
+The changelog records documentation updates, not product release notes. Good entries include:
+
+- Newly added pages.
+- Pages with expanded feature guidance.
+- OpenAPI endpoint count or API group changes.
+- Screenshot coverage changes.
+- Discovery assets such as GEO/SEO, `llms.txt`, and GitHub links.
