@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 
 import { chromium } from "@playwright/test";
@@ -937,6 +938,18 @@ async function ensureAppReachable() {
   }
 }
 
+function convertPngToLosslessWebp(pngPath, webpPath) {
+  const result = spawnSync("cwebp", ["-quiet", "-lossless", pngPath, "-o", webpPath], {
+    encoding: "utf8",
+  });
+  if (result.error) {
+    throw new Error(`cwebp is required to generate WebP reference images: ${result.error.message}`);
+  }
+  if (result.status !== 0) {
+    throw new Error(`cwebp failed for ${pngPath}: ${result.stderr || result.stdout || "unknown error"}`);
+  }
+}
+
 async function captureLocale(locale, env) {
   const outputDir = path.join(ROOT, "src", "images", "hancom", "moldy", locale);
   await ensureDir(outputDir);
@@ -958,11 +971,16 @@ async function captureLocale(locale, env) {
 
   for (const id of [...chatCaptureIds, ...artifactCaptureIds]) {
     const locator = page.locator(`[data-capture-id="${id}"]`).first();
+    const pngPath = path.join(outputDir, `${id}.tmp.png`);
+    const webpPath = path.join(outputDir, `${id}.webp`);
     await locator.scrollIntoViewIfNeeded();
     await locator.screenshot({
-      path: path.join(outputDir, `${id}.png`),
+      path: pngPath,
       animations: "disabled",
     });
+    convertPngToLosslessWebp(pngPath, webpPath);
+    await fs.rm(pngPath, { force: true });
+    await fs.rm(path.join(outputDir, `${id}.png`), { force: true });
   }
 
   await browser.close();

@@ -1,137 +1,125 @@
 ---
 title: Artifact viewer matrix
-description: Map Moldy generated files by kind, extension, MIME type, preview, download, and sharing behavior.
+description: Compare Moldy preview providers and fallback behavior by generated file kind, extension, and MIME type.
 ---
 
-Moldy selects an artifact preview provider from the file `kind`, extension, and MIME type. This page explains what users can see in chat artifact cards, the right artifact panel, **Settings > Files**, and public share screens.
+Moldy selects an artifact preview provider from the file `kind`, extension, MIME type, and status. Use this page as the reference for **which file opens in which viewer**.
 
-For the general workflow, see [Files and artifacts](/hancom/moldy/en/files-artifacts). This page focuses on file-type decisions and operational checks.
+For file library usage, favorites, downloads, and sharing workflows, see [Files and artifacts](/hancom/moldy/en/files-artifacts).
 
-The gallery below is captured from the actual Moldy artifact preview providers. Use these images to identify what each supported file type looks like in the viewer.
+## Full Matrix
 
-## Real Viewer Capture Gallery
+| File/content | Selection signal | Viewer | Check | Fallback/caution |
+| --- | --- | --- | --- | --- |
+| Images | `image/*`, `png`, `jpg`, `jpeg`, `webp` | Image preview | Expansion, visual content, download | Review visual PII before sharing |
+| Audio | `audio/*`, `mp3`, `wav` | Browser audio player | Playback and duration | Browser codec support matters |
+| Video | `video/*`, `mp4`, `webm` | Browser video player | Playback, poster, size | Large files may be better downloaded |
+| PDF | `application/pdf`, `pdf` | PDF embed | Pages and document body | Browser PDF policies can affect preview |
+| HTML | `text/html`, `html`, `htm` | Sandboxed iframe | Rendered result and links | Review external links and embedded media |
+| Markdown | `text/markdown`, `md`, `markdown` | Markdown renderer | Headings, tables, links | Raw text fallback |
+| Mermaid | `mmd`, `mermaid` | Mermaid renderer | Flowchart and sequence output | Syntax errors may remain as code |
+| CSV/TSV | `csv`, `tsv`, text table | Table preview | Delimiter, header, row count | Large files may show a partial view |
+| JSON | `application/json`, `json` | Structured JSON preview | Keys and array/object depth | Review sensitive fields |
+| YAML/TOML | `yaml`, `yml`, `toml` | Key/value preview | Config values and placeholders | Review secret-like values |
+| Code | artifact kind `code` | Code preview | Language, path, overwrite risk | Verify before running |
+| TXT/LOG | `text/*`, `txt`, `log` | Text preview | Error lines and stack traces | Review internal paths and tokens |
+| DOCX | `docx` | Document preview | Body, tables, headings | Download fallback |
+| XLS/XLSX | `xls`, `xlsx` | Sheet/table preview | Sheets, rows, columns | Check formulas and hidden sheets |
+| PPTX | `pptx` | Slide preview | Slide order and body | Download fallback |
+| HWP/HWPX | `hwp`, `hwpx` | Korean document preview | Paragraphs, tables, body structure | Download fallback |
+| Other/CAD | `cad`, `dwg`, unknown MIME | Fallback card | File name, size, download | Consider adding a preview provider |
 
-### Media And HTML
-
-**Image viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-image.png" alt="Moldy image artifact viewer" />
-
-**Audio viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-audio.png" alt="Moldy audio artifact viewer" />
-
-**Video viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-video.png" alt="Moldy video artifact viewer" />
-
-**PDF viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-pdf.png" alt="Moldy PDF artifact viewer" />
-
-**HTML viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-html.png" alt="Moldy HTML artifact viewer" />
-
-### Documents And Data
-
-**Markdown viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-markdown.png" alt="Moldy Markdown artifact viewer" />
-
-**Mermaid viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-mermaid.png" alt="Moldy Mermaid artifact viewer" />
-
-**CSV/TSV table viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-csv.png" alt="Moldy CSV artifact viewer" />
-
-**JSON viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-json.png" alt="Moldy JSON artifact viewer" />
-
-**YAML/TOML viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-yaml.png" alt="Moldy YAML artifact viewer" />
-
-**Code viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-code.png" alt="Moldy code artifact viewer" />
-
-**Text/log viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-text.png" alt="Moldy text artifact viewer" />
-
-### Office Documents And Fallback
-
-**DOCX viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-docx.png" alt="Moldy DOCX artifact viewer" />
-
-**XLS/XLSX viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-xlsx.png" alt="Moldy XLSX artifact viewer" />
-
-**PPTX viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-pptx.png" alt="Moldy PPTX artifact viewer" />
-
-**HWP/HWPX viewer**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-hwpx.png" alt="Moldy HWPX artifact viewer" />
-
-**Fallback download**
-
-<img className="moldy-screenshot" src="/images/hancom/moldy/en/artifact-viewer-fallback.png" alt="Moldy fallback artifact download card" />
-
-## Selection inputs
+## Selection Inputs
 
 | Input | How Moldy uses it |
 | --- | --- |
 | `kind` | Broad category such as `image`, `video`, `audio`, `pdf`, `markdown`, `html`, `code`, `document`, `data`, `cad`, `other` |
-| Extension | File-name signal such as `pdf`, `docx`, `xlsx`, `pptx`, `hwp`, `hwpx`, `csv`, `json`, `md` |
+| Extension | File-name signal. Important when MIME type is incomplete |
 | MIME type | Content type such as `image/*`, `text/html`, `application/pdf`, `application/json` |
-| Status | Preview/download should be available when status is `ready` |
-| Size limits | Text preview byte limit, maximum artifact bytes, maximum files per run |
+| Status | Preview/download should be available when status is `ready`; `writing`, `failed`, and `deleted` are handled as separate states |
+| Size limits | Text preview byte limit, maximum artifact bytes, and maximum files per run can affect display |
 
-## Media viewers
+## Real Viewer Captures
 
-| File | Preview | Main actions | Caution |
-| --- | --- | --- | --- |
-| PNG/JPG/JPEG/WebP | Image preview and expansion | Expand, download, review before sharing | Check visual PII and internal URLs |
-| MP3/WAV audio | Browser audio player | Play, download | Browser codec support matters |
-| MP4/WebM video | Browser video player | Play, download | Large files may be better downloaded |
-| PDF | Embedded PDF preview | Inspect pages, download | Browser PDF policies can affect preview |
+These images are captured from the actual Moldy artifact preview providers. They render smaller in the document, but can be clicked to zoom.
 
-## Document viewers
+<AccordionGroup>
+  <Accordion title="Media and HTML">
+    **Image viewer**
 
-| File | Preview | Main actions | Fallback |
-| --- | --- | --- | --- |
-| Markdown | Markdown renderer | Check headings, tables, links | Raw text |
-| Mermaid | Diagram renderer | Check flowchart/sequence output | Code block |
-| HTML | Sandboxed iframe | Inspect rendered page | Download |
-| DOCX | Document preview | Check body, tables, headings | Download |
-| XLS/XLSX | Sheet/table preview | Check sheets, rows, columns | Download |
-| PPTX | Slide preview | Check slide flow | Download |
-| HWP/HWPX | Korean document preview | Check body structure | Download |
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-image.webp" alt="Moldy image artifact viewer" />
 
-<Warning>
-HTML previews open in a sandboxed iframe. Still review external links, embedded media, and sensitive body content before sharing.
-</Warning>
+    **Audio viewer**
 
-## Data and code viewers
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-audio.webp" alt="Moldy audio artifact viewer" />
 
-| File | Preview | Check |
-| --- | --- | --- |
-| CSV/TSV | Table preview | Delimiter, header, row count |
-| JSON | Structured preview | Key names, array/object depth, sensitive fields |
-| YAML/TOML | Key/value tree | Configuration values, secret placeholders |
-| TXT/LOG | Text preview | Error lines, stack traces, internal paths |
-| Code artifact | Code preview | Language, generated path, overwrite risk |
-| CAD/other | Fallback card | Download availability |
+    **Video viewer**
 
-## Chat, library, and sharing
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-video.webp" alt="Moldy video artifact viewer" />
+
+    **PDF viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-pdf.webp" alt="Moldy PDF artifact viewer" />
+
+    **HTML viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-html.webp" alt="Moldy HTML artifact viewer" />
+  </Accordion>
+
+  <Accordion title="Documents and data">
+    **Markdown viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-markdown.webp" alt="Moldy Markdown artifact viewer" />
+
+    **Mermaid viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-mermaid.webp" alt="Moldy Mermaid artifact viewer" />
+
+    **CSV/TSV table viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-csv.webp" alt="Moldy CSV artifact viewer" />
+
+    **JSON viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-json.webp" alt="Moldy JSON artifact viewer" />
+
+    **YAML/TOML viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-yaml.webp" alt="Moldy YAML artifact viewer" />
+
+    **Code viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-code.webp" alt="Moldy code artifact viewer" />
+
+    **Text/log viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-text.webp" alt="Moldy text artifact viewer" />
+  </Accordion>
+
+  <Accordion title="Office documents and fallback">
+    **DOCX viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-docx.webp" alt="Moldy DOCX artifact viewer" />
+
+    **XLS/XLSX viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-xlsx.webp" alt="Moldy XLSX artifact viewer" />
+
+    **PPTX viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-pptx.webp" alt="Moldy PPTX artifact viewer" />
+
+    **HWP/HWPX viewer**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-hwpx.webp" alt="Moldy HWPX artifact viewer" />
+
+    **Fallback download**
+
+    <img className="moldy-screenshot moldy-screenshot--compact" src="/images/hancom/moldy/en/artifact-viewer-fallback.webp" alt="Moldy fallback artifact download card" />
+  </Accordion>
+</AccordionGroup>
+
+## Location Differences
 
 | Location | Best for |
 | --- | --- |
@@ -140,7 +128,7 @@ HTML previews open in a sandboxed iframe. Still review external links, embedded 
 | **Settings > Files** | Search, filters, favorites, stats across conversations |
 | Public share screen | Read-only snapshot and shared files by share token |
 
-## Failure checks
+## Failure Checks
 
 | Symptom | Check first |
 | --- | --- |
@@ -150,7 +138,11 @@ HTML previews open in a sandboxed iframe. Still review external links, embedded 
 | Only fallback appears | Extension/MIME provider support |
 | Old file appears | Version number and update time |
 
-## Maintenance checklist
+<Warning>
+HTML previews open in a sandboxed iframe. Still review external links, embedded media, and sensitive body content before sharing.
+</Warning>
+
+## Maintenance Checklist
 
 When viewer behavior changes, update:
 

@@ -4,12 +4,17 @@
 
 .moldy-screenshot {
   display: block;
-  width: 100%;
+  max-width: 100%;
+  width: auto;
   height: auto;
   margin: 12px 0 28px;
   border: 1px solid rgba(4, 120, 87, 0.18);
   border-radius: 10px;
   box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+}
+
+.moldy-screenshot--compact {
+  max-width: min(100%, 480px);
 }
 
 .moldy-muted {
